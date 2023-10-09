@@ -14,7 +14,7 @@ export default function Navbar(props) {
       }
     };
     return (
-      <div className="fixed bottom-0 left-0 w-full text-white py-4">
+      <div className="w-full text-white py-4">
         <div className="container mx-auto flex justify-center items-center">
           <button onClick={updateView} className="bg-purple-500 hover:bg-purple-600 text-white font-semibold px-6 py-3 rounded-full mx-2">
             Change View

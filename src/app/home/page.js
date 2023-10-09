@@ -13,6 +13,8 @@ import DatePicker from "react-datepicker";
 import classNames from "classnames";
 import { useCallback } from "react";
 import EventCard from "@/components/eventCard/page";
+import { Swipeable, useSwipeable } from 'react-swipeable';
+
 
 const locales = {
   "en-US": require("date-fns/locale/en-US"),
@@ -28,7 +30,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-
 
 const eventStyle = (event, start, end, isSelected) => {
   const style = {
@@ -46,7 +47,7 @@ const eventStyle = (event, start, end, isSelected) => {
 
 const calendarStyle = () => {
   return {
-    height: 550,
+    height: "100%",
   };
 };
 
@@ -57,15 +58,20 @@ function handleClick(event) {
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [calendarView, setView] = useState(false);
+  const [calendarView, setView] = useState(true);
   const [events, setEvents] = useState("");
   const [formattedEvents, setFormattedEvents] = useState("");
 
   useEffect(() => {
     const fetchEvents = async () => {
-
-      const { data: { user } } = await supabase.auth.getUser()
-      const { data, error } = await supabase.from("Events").select().eq("user_uuid", user.id).order("date");
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("Events")
+        .select()
+        .eq("user_uuid", user.id)
+        .order("date");
 
       setEvents(data);
       console.log(data);
@@ -77,25 +83,22 @@ export default function Home() {
     const reformatEvents = () => {
       if (events) {
         const formattedEvents = events.map((event) => {
-
           const eventDate = event.date;
           const eventTime = event.time;
-  
 
           const dateParts = eventDate.split("-");
           const timeParts = eventTime.split(":");
-  
 
           const startDate = new Date(
-            parseInt(dateParts[0]),   
-            parseInt(dateParts[1]) - 1, 
-            parseInt(dateParts[2]),   
-            parseInt(timeParts[0]),   
-            parseInt(timeParts[1])    
+            parseInt(dateParts[0]),
+            parseInt(dateParts[1]) - 1,
+            parseInt(dateParts[2]),
+            parseInt(timeParts[0]),
+            parseInt(timeParts[1])
           );
-  
+
           const endDate = new Date(startDate);
-  
+
           return {
             id: event.id,
             title: event.title,
@@ -105,13 +108,23 @@ export default function Home() {
             eventColor: event.color,
           };
         });
-  
+
         setFormattedEvents(formattedEvents);
       }
     };
     reformatEvents();
   }, [events]);
-  
+
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handlePreviousMonth(),
+    onSwipedRight: () => handleNextMonth(),
+    swipeDuration: 500,
+    preventScrollOnSwipe: true,
+    trackMouse: true,
+  })
+
+
 
   const handleNextMonth = () => {
     const nextMonthDate = new Date(currentDate);
@@ -153,56 +166,63 @@ export default function Home() {
     if (!calendarView) {
       return (
         <>
-          <HomeHeader></HomeHeader>
-          <div className="flex flex-col gap-4 py-4 px-2">{cardsComponent}</div>
-          <Navbar view={calendarView} setView={setView}></Navbar>
+          <section className="h-screen flex flex-col">
+            <HomeHeader></HomeHeader>
+            <div className="h-full flex flex-col gap-4 py-4 px-2 overflow-y-auto">
+              {cardsComponent}
+            </div>
+            <Navbar view={calendarView} setView={setView}></Navbar>
+          </section>
+          <></>
         </>
       );
     } else if (calendarView) {
       return (
         <>
+        <section className="h-screen flex flex-col">
           <HomeHeader></HomeHeader>
-          <div className="bg-gray-100 min-h-screen py-4">
-            <div className="w-full">
-              <div className="flex justify-center items-center mb-4">
-                <button onClick={handlePreviousMonth} className="">
-                  <img
-                    src="icons/arrow.svg"
-                    width="20px"
-                    alt="Next Month"
-                    style={{ transform: "rotate(90deg)" }}
-                  />
-                </button>
-                <div className="w-60 text-center">
-                  <h1 className="text-2xl font-bold text-gray-800">
-                    {formattedDate}
-                  </h1>
+                <div className="flex justify-center items-center my-4">
+                  <button onClick={handlePreviousMonth} className="">
+                    <img
+                      src="icons/arrow.svg"
+                      width="20px"
+                      alt="Next Month"
+                      style={{ transform: "rotate(90deg)" }}
+                    />
+                  </button>
+                  <div className="w-60 text-center">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                      {formattedDate}
+                    </h1>
+                  </div>
+                  <button onClick={handleNextMonth} className="">
+                    <img
+                      src="icons/arrow.svg"
+                      width="20px"
+                      alt="Next Month"
+                      style={{ transform: "rotate(270deg)" }}
+                    />
+                  </button>
                 </div>
-                <button onClick={handleNextMonth} className="">
-                  <img
-                    src="icons/arrow.svg"
-                    width="20px"
-                    alt="Next Month"
-                    style={{ transform: "rotate(270deg)" }}
-                  />
-                </button>
-              </div>
+            <div {...handlers} className=" py-4 h-full">
+              <div className="h-full">
 
-              <Calendar
-                localizer={localizer}
-                events={formattedEvents}
-                startAccessor={"start"}
-                endAccessor={"end"}
-                style={calendarStyle()}
-                toolbar={false}
-                eventPropGetter={eventStyle}
-                onSelectEvent={handleClick}
-                onNavigate={onNavigate}
-                date={currentDate}
-              />
+                <Calendar className="h-full"
+                  localizer={localizer}
+                  events={formattedEvents}
+                  startAccessor={"start"}
+                  endAccessor={"end"}
+                  style={calendarStyle()}
+                  toolbar={false}
+                  eventPropGetter={eventStyle}
+                  onSelectEvent={handleClick}
+                  onNavigate={onNavigate}
+                  date={currentDate}
+                />
+              </div>
             </div>
-          </div>
           <Navbar view={calendarView} setView={setView}></Navbar>
+        </section>
         </>
       );
     }
