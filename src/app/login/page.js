@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
     const router = useRouter();
+    const [loginError, setLoginError] = useState("");
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -23,15 +24,25 @@ export default function Login() {
         email: formData.email,
         password: formData.password,
       });
-      router.push("/home");
     } catch (error) {
       console.error("Error:", error);
+    }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if(user)
+    {
+      router.push("/home");
+    }
+    else{
+      console.log("wrong password");
+      setLoginError("Email or password is incorrect");
     }
   };
 
   return (
     <>
       <StartHeader></StartHeader>
+      <p className="text-red-500">{loginError}</p>
       <section className="">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
