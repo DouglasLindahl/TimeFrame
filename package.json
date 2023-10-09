@@ -1,0 +1,27 @@
+{
+  "name": "timeframe",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "classnames": "^2.3.2",
+    "date-fns": "^2.30.0",
+    "next": "13.5.4",
+    "react": "^18",
+    "react-big-calendar": "^1.8.4",
+    "react-datepicker": "^4.19.0",
+    "react-dom": "^18",
+    "supabase": "^1.100.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10",
+    "postcss": "^8",
+    "tailwindcss": "^3"
+  }
+}
