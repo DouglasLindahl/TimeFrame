@@ -17,27 +17,32 @@ export default function Login() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-    } catch (error) {
-      console.error("Error:", error);
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if(user)
-    {
-      router.push("/home");
-    }
-    else{
-      console.log("wrong password");
+    if (error) {
+      // Handle authentication error here
+      console.log("Authentication error:", error);
       setLoginError("Email or password is incorrect");
+    } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push("/home");
+      } else {
+        console.log("wrong password");
+        setLoginError("Email or password is incorrect");
+      }
     }
-  };
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
 
   return (
     <>
