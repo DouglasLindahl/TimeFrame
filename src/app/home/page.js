@@ -63,7 +63,10 @@ export default function Home() {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const { data, error } = await supabase.from("Events").select();
+
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data, error } = await supabase.from("Events").select().eq("user_uuid", user.id).order("date");
+
       setEvents(data);
       console.log(data);
     };
