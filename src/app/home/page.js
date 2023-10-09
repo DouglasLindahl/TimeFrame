@@ -158,6 +158,7 @@ export default function Home() {
         title={event.title}
         description={event.description}
         date={event.date}
+        time={event.time}
         color={event.color}
       />
     ));
