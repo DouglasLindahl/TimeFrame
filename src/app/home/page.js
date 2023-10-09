@@ -8,10 +8,11 @@ import format from "date-fns/format";
 import parse from "date-fns/parse";
 import { startOfWeek, getDay, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import react, { useState } from "react";
+import react, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import classNames from "classnames";
 import { useCallback } from "react";
+import EventCard from "@/components/eventCard/page";
 
 const locales = {
   "en-US": require("date-fns/locale/en-US"),
@@ -27,23 +28,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-
-const events = [
-  {
-    id: 1,
-    title: "Cool Event",
-    start: new Date(2023, 9, 10),
-    end: new Date(2023, 9, 10),
-    eventColor: "orange",
-  },
-  {
-    id: 2,
-    title: "Another Event",
-    start: new Date(2023, 9, 5),
-    end: new Date(2023, 9, 5),
-    eventColor: "blue",
-  },
-];
 
 const eventStyle = (event, start, end, isSelected) => {
   const style = {
@@ -73,6 +57,57 @@ function handleClick(event) {
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarView, setView] = useState(true);
+  const [events, setEvents] = useState("");
+  const [formattedEvents, setFormattedEvents] = useState("");
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase.from("Events").select();
+      setEvents(data);
+      console.log(data);
+    };
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    const reformatEvents = () => {
+      if (events) {
+        const formattedEvents = events.map((event) => {
+
+          const eventDate = event.date;
+          const eventTime = event.time;
+  
+
+          const dateParts = eventDate.split("-");
+          const timeParts = eventTime.split(":");
+  
+
+          const startDate = new Date(
+            parseInt(dateParts[0]),   
+            parseInt(dateParts[1]) - 1, 
+            parseInt(dateParts[2]),   
+            parseInt(timeParts[0]),   
+            parseInt(timeParts[1])    
+          );
+  
+          const endDate = new Date(startDate);
+  
+          return {
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            start: startDate,
+            end: endDate,
+            eventColor: event.color,
+          };
+        });
+  
+        setFormattedEvents(formattedEvents);
+      }
+    };
+    reformatEvents();
+  }, [events]);
+  
 
   const handleNextMonth = () => {
     const nextMonthDate = new Date(currentDate);
@@ -97,49 +132,80 @@ export default function Home() {
     month: "long",
   });
 
-  if (!calendarView) {
-    return (
-      <>
-        <HomeHeader></HomeHeader>
-        <div>asd</div>
-        <Navbar view={calendarView} setView={setView}></Navbar>
-      </>
-    );
-  } else if (calendarView) {
-    return (
-      <>
-        <HomeHeader></HomeHeader>
-        <div className="bg-gray-100 min-h-screen py-4">
-          <div className="w-full">
-            <div className="flex justify-center items-center mb-4">
-              <button onClick={handlePreviousMonth} className="">
-              <img src="icons/arrow.svg" width="20px" alt="Next Month" style={{ transform: 'rotate(90deg)' }} />
-              </button>
-              <div className="w-60 text-center">
-                <h1 className="text-2xl font-bold text-gray-800">
-                  {formattedDate}
-                </h1>
-              </div>
-              <button onClick={handleNextMonth} className="">
-                <img src="icons/arrow.svg" width="20px" alt="Next Month" style={{ transform: 'rotate(270deg)' }} />
-              </button>
-            </div>
+  let cardsComponent = null;
+  if (Array.isArray(events)) {
+    cardsComponent = events.map((event) => (
+      <EventCard
+        key={event.id}
+        id={event.id}
+        title={event.title}
+        description={event.description}
+        start_date={event.start}
+      />
+    ));
+  }
 
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor={"start"}
-              endAccessor={"end"}
-              style={calendarStyle()}
-              toolbar={false}
-              eventPropGetter={eventStyle}
-              onSelectEvent={handleClick}
-              onNavigate={onNavigate}
-              date={currentDate}
-            />
+  if (events) {
+    if (!calendarView) {
+      return (
+        <>
+          <HomeHeader></HomeHeader>
+          <div className="flex flex-col gap-4 py-4 px-2">{cardsComponent}</div>
+          <Navbar view={calendarView} setView={setView}></Navbar>
+        </>
+      );
+    } else if (calendarView) {
+      return (
+        <>
+          <HomeHeader></HomeHeader>
+          <div className="bg-gray-100 min-h-screen py-4">
+            <div className="w-full">
+              <div className="flex justify-center items-center mb-4">
+                <button onClick={handlePreviousMonth} className="">
+                  <img
+                    src="icons/arrow.svg"
+                    width="20px"
+                    alt="Next Month"
+                    style={{ transform: "rotate(90deg)" }}
+                  />
+                </button>
+                <div className="w-60 text-center">
+                  <h1 className="text-2xl font-bold text-gray-800">
+                    {formattedDate}
+                  </h1>
+                </div>
+                <button onClick={handleNextMonth} className="">
+                  <img
+                    src="icons/arrow.svg"
+                    width="20px"
+                    alt="Next Month"
+                    style={{ transform: "rotate(270deg)" }}
+                  />
+                </button>
+              </div>
+
+              <Calendar
+                localizer={localizer}
+                events={formattedEvents}
+                startAccessor={"start"}
+                endAccessor={"end"}
+                style={calendarStyle()}
+                toolbar={false}
+                eventPropGetter={eventStyle}
+                onSelectEvent={handleClick}
+                onNavigate={onNavigate}
+                date={currentDate}
+              />
+            </div>
           </div>
-        </div>
-        <Navbar view={calendarView} setView={setView}></Navbar>
+          <Navbar view={calendarView} setView={setView}></Navbar>
+        </>
+      );
+    }
+  } else {
+    return (
+      <>
+        <h1>Loading...</h1>
       </>
     );
   }
