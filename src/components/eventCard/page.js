@@ -10,7 +10,7 @@ export default function EventCard(props) {
     const dateClassName = isCurrentDate ? 'text-xl font-bold' : 'text-xl';
 
     return (
-      <Link href="home" className={`flex items-center justify-between bg-amber-300 py-2 px-4 rounded-xl`}>
+      <Link style={{ borderBottom: `solid 8px ${props.color}`, borderTop: `solid 2px ${props.color}`, borderLeft: `solid 2px ${props.color}`, borderRight: `solid 2px ${props.color}`}} href="home" className={`flex items-center justify-between text-black py-2 px-4 rounded-xl`}>
         <h1 className="text-2xl">{props.title}</h1>
         <span className={dateClassName}>{`${day} ${month}`}</span>
       </Link>

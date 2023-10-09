@@ -58,7 +58,7 @@ function handleClick(event) {
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [calendarView, setView] = useState(true);
+  const [calendarView, setView] = useState(false);
   const [events, setEvents] = useState("");
   const [formattedEvents, setFormattedEvents] = useState("");
 
@@ -158,6 +158,7 @@ export default function Home() {
         title={event.title}
         description={event.description}
         date={event.date}
+        color={event.color}
       />
     ));
   }
@@ -204,7 +205,7 @@ export default function Home() {
                     />
                   </button>
                 </div>
-            <div {...handlers} className=" py-4 h-full">
+            <div {...handlers} className="h-full">
               <div className="h-full">
 
                 <Calendar className="h-full"
