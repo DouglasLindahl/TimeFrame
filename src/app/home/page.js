@@ -29,6 +29,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+
 const eventStyle = (event, start, end, isSelected) => {
   const style = {
     backgroundColor: event.eventColor,
@@ -56,7 +57,7 @@ function handleClick(event) {
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [calendarView, setView] = useState(true);
+  const [calendarView, setView] = useState(false);
   const [events, setEvents] = useState("");
   const [formattedEvents, setFormattedEvents] = useState("");
 
@@ -140,7 +141,7 @@ export default function Home() {
         id={event.id}
         title={event.title}
         description={event.description}
-        start_date={event.start}
+        date={event.date}
       />
     ));
   }

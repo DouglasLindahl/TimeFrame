@@ -1,22 +1,28 @@
 import Link from "next/link";
+
 export default function EventCard(props) {
-    const formatDate = (date) => {
-      const day = date.getDate().toString().padStart(2, '0'); // Add leading zeros if necessary
-      const month = date.toLocaleString('en-US', { month: 'short' });
-      return `${day} ${month}`;
-    };
-  
-    const formattedDate = formatDate(props.start_date);
-    const isCurrentDay = new Date().toDateString() === props.start_date.toDateString();
-    const dateClassName = isCurrentDay ? 'font-bold' : '';
-  
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const isCurrentDate = isToday(date);
+
+    const dateClassName = isCurrentDate ? 'text-xl font-bold' : 'text-xl';
+
     return (
-      <>
-        <Link href="home" className="flex items-center justify-between bg-amber-300 py-2 px-4 rounded-xl">
-          <h1 className="text-2xl">{props.title}</h1>
-          <span className={`text-xl ${dateClassName}`}>{formattedDate}</span>
-        </Link>
-      </>
+      <Link href="home" className={`flex items-center justify-between bg-amber-300 py-2 px-4 rounded-xl`}>
+        <h1 className="text-2xl">{props.title}</h1>
+        <span className={dateClassName}>{`${day} ${month}`}</span>
+      </Link>
     );
-  }
-  
+  };
+
+  const isToday = (date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  };
+
+  return formatDate(props.date);
+}
