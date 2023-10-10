@@ -1,31 +1,39 @@
-import Link from "next/link";
+"use client"
+import { useRouter } from "next/navigation";
 
 export default function EventCard(props) {
-  const formatDate = (dateString) => {
+    const router = useRouter();
+
+    function redirectToSingleEvent(){
+      router.push(`singleEvent/${[props.id]}?id=${props.id}`);
+    }
+
+
+    const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
     const month = date.toLocaleString("en-US", { month: "short" });
     const isCurrentDate = isToday(date);
-
     const dateClassName = isCurrentDate ? "text-xl font-bold" : "text-xl";
 
+
     return (
-      <Link
+      <button
+        onClick={redirectToSingleEvent}
         style={{
           borderBottom: `solid 8px ${props.color}`,
           borderTop: `solid 2px ${props.color}`,
           borderLeft: `solid 2px ${props.color}`,
           borderRight: `solid 2px ${props.color}`,
         }}
-        href="home"
         className={`flex flex-col items-left justify-between text-black py-2 px-4 font-medium rounded-xl`}
       >
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl">{props.title}</h1>
-          <span className={dateClassName}>{`${day} ${month}`}</span>
+        <div className="flex w-full items-center justify-between">
+          <h1 className="text-2xl text-left">{props.title}</h1>
+          <p className={dateClassName}>{`${day} ${month}`}</p>
         </div>
         <p className="font-medium text-lg">{props.time.slice(0, 5)}</p>
-      </Link>
+      </button>
     );
   };
 
