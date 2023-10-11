@@ -148,8 +148,8 @@ export default function Home() {
   }, [events]);
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => handlePreviousMonth(),
-    onSwipedRight: () => handleNextMonth(),
+    onSwipedLeft: () => handleNextMonth(),
+    onSwipedRight: () => handlePreviousMonth(),
     swipeDuration: 500,
     preventScrollOnSwipe: true,
     trackMouse: true,
