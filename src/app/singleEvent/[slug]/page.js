@@ -18,7 +18,6 @@ const Slug = (id) => {
   const [loading, setLoading] = useState(true);
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
     const {
       data: { user },
     } = await supabase.auth.getUser();

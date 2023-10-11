@@ -13,8 +13,8 @@ import DatePicker from "react-datepicker";
 import classNames from "classnames";
 import { useCallback } from "react";
 import EventCard from "@/components/eventCard/page";
-import { Swipeable, useSwipeable } from 'react-swipeable';
-
+import { Swipeable, useSwipeable } from "react-swipeable";
+import { useRouter } from "next/navigation";
 
 const locales = {
   "en-US": require("date-fns/locale/en-US"),
@@ -51,16 +51,49 @@ const calendarStyle = () => {
   };
 };
 
-function handleClick(event) {
-  const eventId = event.id;
-  console.log(`Clicked on event with id: ${eventId}`);
-}
-
 export default function Home() {
+  const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarView, setView] = useState(false);
   const [events, setEvents] = useState("");
   const [formattedEvents, setFormattedEvents] = useState("");
+  const [userInfo, setUserInfo] = useState("");
+
+  function goToSinglePage(event) {
+    const eventId = event.id;
+    console.log(`Clicked on event with id: ${eventId}`);
+    router.push(`singleEvent/${[eventId]}?id=${eventId}`);
+  }
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("UserInfo")
+        .select()
+        .eq("user_uuid", user.id);
+
+      setUserInfo(data);
+      setView(data[0].prefers_calendar);
+    };
+    fetchUserInfo();
+  }, []);
+
+  // useEffect(() => {
+  //   const updatedPreferredView = async () => {
+  //     const {
+  //       data: { user },
+  //     } = await supabase.auth.getUser();
+  //     const { error } = await supabase
+  //     .from('UserInfo')
+  //     .update({ prefers_calendar: calendarView })
+  //     .eq('user_uuid', user.id)
+  //   };
+  //   updatedPreferredView();
+  // }, [calendarView]);
+
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -74,7 +107,6 @@ export default function Home() {
         .order("date");
 
       setEvents(data);
-      console.log(data);
     };
     fetchEvents();
   }, []);
@@ -115,16 +147,13 @@ export default function Home() {
     reformatEvents();
   }, [events]);
 
-
   const handlers = useSwipeable({
     onSwipedLeft: () => handlePreviousMonth(),
     onSwipedRight: () => handleNextMonth(),
     swipeDuration: 500,
     preventScrollOnSwipe: true,
     trackMouse: true,
-  })
-
-
+  });
 
   const handleNextMonth = () => {
     const nextMonthDate = new Date(currentDate);
@@ -181,35 +210,35 @@ export default function Home() {
     } else if (calendarView) {
       return (
         <>
-        <section className="h-screen flex flex-col">
-          <HomeHeader></HomeHeader>
-                <div className="flex justify-center items-center my-4">
-                  <button onClick={handlePreviousMonth} className="">
-                    <img
-                      src="icons/arrow.svg"
-                      width="20px"
-                      alt="Next Month"
-                      style={{ transform: "rotate(90deg)" }}
-                    />
-                  </button>
-                  <div className="w-60 text-center">
-                    <h1 className="text-2xl font-bold text-gray-800">
-                      {formattedDate}
-                    </h1>
-                  </div>
-                  <button onClick={handleNextMonth} className="">
-                    <img
-                      src="icons/arrow.svg"
-                      width="20px"
-                      alt="Next Month"
-                      style={{ transform: "rotate(270deg)" }}
-                    />
-                  </button>
-                </div>
+          <section className="h-screen flex flex-col">
+            <HomeHeader></HomeHeader>
+            <div className="flex justify-center items-center my-4">
+              <button onClick={handlePreviousMonth} className="">
+                <img
+                  src="icons/arrow.svg"
+                  width="20px"
+                  alt="Next Month"
+                  style={{ transform: "rotate(90deg)" }}
+                />
+              </button>
+              <div className="w-60 text-center">
+                <h1 className="text-2xl font-bold text-gray-800">
+                  {formattedDate}
+                </h1>
+              </div>
+              <button onClick={handleNextMonth} className="">
+                <img
+                  src="icons/arrow.svg"
+                  width="20px"
+                  alt="Next Month"
+                  style={{ transform: "rotate(270deg)" }}
+                />
+              </button>
+            </div>
             <div {...handlers} className="h-full">
               <div className="h-full">
-
-                <Calendar className="h-full"
+                <Calendar
+                  className="h-full"
                   localizer={localizer}
                   events={formattedEvents}
                   startAccessor={"start"}
@@ -217,14 +246,14 @@ export default function Home() {
                   style={calendarStyle()}
                   toolbar={false}
                   eventPropGetter={eventStyle}
-                  onSelectEvent={handleClick}
+                  onSelectEvent={goToSinglePage}
                   onNavigate={onNavigate}
                   date={currentDate}
                 />
               </div>
             </div>
-          <Navbar view={calendarView} setView={setView}></Navbar>
-        </section>
+            <Navbar view={calendarView} setView={setView}></Navbar>
+          </section>
         </>
       );
     }
