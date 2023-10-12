@@ -21,12 +21,13 @@ export default function EventCard(props) {
       <button
         onClick={redirectToSingleEvent}
         style={{
-          borderBottom: `solid 8px ${props.color}`,
-          borderTop: `solid 2px ${props.color}`,
-          borderLeft: `solid 2px ${props.color}`,
-          borderRight: `solid 2px ${props.color}`,
+          // borderBottom: `solid 8px ${props.color}`,
+          // borderTop: `solid 8px #6C63FF`,
+          borderBottom: `solid 8px #6C63FF`,
+          // borderLeft: `solid 8px #6C63FF`,
+          // borderRight: `solid 8px #6C63FF`,
         }}
-        className={`flex flex-col items-left justify-between text-black py-2 px-4 font-medium rounded-xl`}
+        className={`flex flex-col items-left justify-between text-white py-2 px-4 font-medium rounded-xl`}
       >
         <div className="flex w-full items-center justify-between">
           <h1 className="text-2xl text-left">{props.title}</h1>

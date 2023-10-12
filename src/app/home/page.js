@@ -3,7 +3,7 @@ import Image from "next/image";
 import HomeHeader from "@/components/homeHeader/page";
 import Navbar from "@/components/navbar/page";
 import { supabase } from "../../../supabase";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer} from "react-big-calendar";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import { startOfWeek, getDay, addDays } from "date-fns";
@@ -58,6 +58,22 @@ export default function Home() {
   const [events, setEvents] = useState("");
   const [formattedEvents, setFormattedEvents] = useState("");
   const [userInfo, setUserInfo] = useState("");
+  const [user, setUser] = useState("");
+  const [session, setSession] = useState(false);
+
+  useEffect(() => {
+    const checkUserSession = async () => {
+      const session = supabase.auth.getSession();
+      if (session) {
+        if ((await session).data.session == null) {
+          router.push("/login");
+        } else {
+          setSession(true);
+        }
+      }
+    };
+    checkUserSession();
+  }, [router]);
 
   function goToSinglePage(event) {
     const eventId = event.id;
@@ -66,50 +82,42 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const { data, error } = await supabase
+    if(session)
+    {
+      const fetchUserInfo = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        const { data, error } = await supabase
         .from("UserInfo")
         .select()
         .eq("user_uuid", user.id);
-
-      setUserInfo(data);
-      setView(data[0].prefers_calendar);
-    };
-    fetchUserInfo();
-  }, []);
-
-  // useEffect(() => {
-  //   const updatedPreferredView = async () => {
-  //     const {
-  //       data: { user },
-  //     } = await supabase.auth.getUser();
-  //     const { error } = await supabase
-  //     .from('UserInfo')
-  //     .update({ prefers_calendar: calendarView })
-  //     .eq('user_uuid', user.id)
-  //   };
-  //   updatedPreferredView();
-  // }, [calendarView]);
-
+        
+        setUserInfo(data);
+        setView(data[0].prefers_calendar);
+      };
+      fetchUserInfo();
+    }
+  }, [session]);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const { data, error } = await supabase
+    if(session)
+    {
+      const fetchEvents = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        const { data, error } = await supabase
         .from("Events")
         .select()
         .eq("user_uuid", user.id)
         .order("date");
-
-      setEvents(data);
-    };
-    fetchEvents();
-  }, []);
+        
+        setEvents(data);
+      };
+      fetchEvents();
+    }
+  }, [session]);
 
   useEffect(() => {
     const reformatEvents = () => {
@@ -168,6 +176,10 @@ export default function Home() {
     console.log(currentDate);
   };
 
+  const handleDateClick = (date, view, e) => {
+    // Do nothing when a date is clicked
+  };
+
   const onNavigate = useCallback((date) => {
     const fullMonth = getStartAndEndDate(date);
     setSelectedMonth(fullMonth);
@@ -197,9 +209,9 @@ export default function Home() {
     if (!calendarView) {
       return (
         <>
-          <section className="h-screen flex flex-col">
+          <section className="h-screen flex flex-col bg-background">
             <HomeHeader></HomeHeader>
-            <div className="h-full flex flex-col gap-4 py-4 px-2 overflow-y-auto">
+            <div className="h-full flex flex-col gap-4 py-6 px-4 overflow-y-auto">
               {cardsComponent}
             </div>
             <Navbar view={calendarView} setView={setView}></Navbar>
@@ -247,8 +259,8 @@ export default function Home() {
                   toolbar={false}
                   eventPropGetter={eventStyle}
                   onSelectEvent={goToSinglePage}
-                  onNavigate={onNavigate}
                   date={currentDate}
+                  onNavigate={handleDateClick}
                 />
               </div>
             </div>

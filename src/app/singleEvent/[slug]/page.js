@@ -70,6 +70,15 @@ const Slug = (id) => {
     updateInputFields();
   }, [event]);
 
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString("en-US", { month: "short" });
+    return { day, month };
+  };
+
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -80,8 +89,14 @@ const Slug = (id) => {
       <section className="flex flex-col h-screen">
         <HomeHeader></HomeHeader>
         <section className="flex-grow flex flex-col gap-8 p-4 overflow-y-auto">
-          <div className="flex flex items-center gap-4 pb-4 border-solid border-b-2 border-primary-dark">
-            <h1 className="text-4xl font-semibold text-text">{event.title}</h1>
+          <div className="flex flex flex-col gap-4 pb-4 border-solid border-b-2 border-primary-dark">
+            <div className="flex justify-between">
+              <h1 className="text-4xl font-semibold text-text">{event.title}</h1>
+              <h1 className="text-4xl font-semibold text-text">{formatDate(event.date).day} {formatDate(event.date).month}</h1>
+            </div>
+            <div>
+              <h1 className="text-4xl font-semibold text-text">{event.time.slice(0, 5)}</h1>
+            </div>
           </div>
           <div>
             <form onSubmit={handleSubmit}>
@@ -100,7 +115,6 @@ const Slug = (id) => {
                   onChange={(e) => setTitle(e.target.value)}
                   className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-200"
                   required
-                  disabled
                 />
               </div>
               <div className="mb-4">

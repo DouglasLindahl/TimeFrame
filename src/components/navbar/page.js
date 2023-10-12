@@ -35,7 +35,7 @@ export default function Navbar(props) {
   }
 
   return (
-    <div className="w-full text-white py-4 border-t-4 border-primary-dark">
+    <div className="w-full text-white py-4">
       <div className="container mx-auto flex justify-center items-center">
         <button
           onClick={updateView}
