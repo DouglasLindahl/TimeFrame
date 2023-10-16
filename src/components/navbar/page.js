@@ -9,6 +9,7 @@ const NavbarContainer = styled.div`
   width: 100%;
   color: white;
   padding: 16px 0;
+  background-color: #202020;
 `;
 
 const Container = styled.div`
@@ -97,6 +98,7 @@ const KeepEventButton = styled.button`
 const SinglePageContainer = styled.div`
   width: 100%;
   padding: 16px;
+  background-color: #202020;
 `;
 
 const SinglePageInnerContainer = styled.div`

@@ -250,16 +250,42 @@ export default function Home() {
           data: { user },
         } = await supabase.auth.getUser();
         const { data, error } = await supabase
-          .from("Events")
-          .select()
-          .eq("user_uuid", user.id)
-          .order(["date", "time"]);
+        .from("Events")
+        .select()
+        .eq("user_uuid", user.id)
+        .eq("archived", false)
+        .order(["date", "time"]);      
 
         setEvents(data);
       };
+      const archiveEvents = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        const { data, error } = await supabase
+        .from("Events")
+        .select()
+        .eq("user_uuid", user.id)
+        .eq("archived", false)
+
+        const today = new Date();
+        console.log(today);
+
+        for (const event of data) {
+          const eventDate = new Date(event.date);
+          if (eventDate < today) {
+            await supabase
+              .from("Events")
+              .update({ archived: true })
+              .eq("id", event.id);
+          }
+        }
+      };
+      archiveEvents();
       fetchEvents();
     }
   }, [session]);
+  
 
   useEffect(() => {
     const reformatEvents = () => {

@@ -3,6 +3,7 @@ import { supabase } from "../../../supabase";
 import { useRouter } from "next/navigation";
 import react, { useEffect, useState } from "react";
 import { GraphQLClient, ClientContext } from 'graphql-hooks';
+import Header from "@/components/header/page";
 
 const client = new GraphQLClient({
   url: 'https://graphql.datocms.com/',
