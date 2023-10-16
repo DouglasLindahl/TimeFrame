@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import HomeHeader from "@/components/homeHeader/page";
+import HomeHeader from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
 import { supabase } from "../../../supabase";
 import { Calendar, dateFnsLocalizer} from "react-big-calendar";
@@ -34,10 +34,8 @@ const localizer = dateFnsLocalizer({
 const eventStyle = (event, start, end, isSelected) => {
   const style = {
     backgroundColor: event.eventColor,
-    borderColor: "border-black",
-    borderRadius: "5px",
     opacity: 0.8,
-    color: "text-black",
+    color: "white",
     fontWeight: "bold",
   };
   return {
@@ -48,6 +46,7 @@ const eventStyle = (event, start, end, isSelected) => {
 const calendarStyle = () => {
   return {
     height: "100%",
+    // color: "white"
   };
 };
 
@@ -111,7 +110,7 @@ export default function Home() {
         .from("Events")
         .select()
         .eq("user_uuid", user.id)
-        .order("date");
+        .order(["date", "time"])
         
         setEvents(data);
       };
@@ -210,8 +209,8 @@ export default function Home() {
       return (
         <>
           <section className="h-screen flex flex-col bg-background">
-            <HomeHeader></HomeHeader>
-            <div className="h-full flex flex-col gap-4 py-6 px-4 overflow-y-auto">
+            <HomeHeader header={"home"}></HomeHeader>
+            <div className="h-full flex flex-col gap-6 py-6 px-4 overflow-y-auto">
               {cardsComponent}
             </div>
             <Navbar view={calendarView} setView={setView}></Navbar>
@@ -222,25 +221,25 @@ export default function Home() {
     } else if (calendarView) {
       return (
         <>
-          <section className="h-screen flex flex-col">
-            <HomeHeader></HomeHeader>
+          <section className="h-screen flex flex-col bg-background">
+            <HomeHeader header={"home"}></HomeHeader>
             <div className="flex justify-center items-center my-4">
               <button onClick={handlePreviousMonth} className="">
                 <img
-                  src="icons/arrow.svg"
+                  src="icons/arrowWhite.svg"
                   width="20px"
                   alt="Next Month"
                   style={{ transform: "rotate(90deg)" }}
                 />
               </button>
               <div className="w-60 text-center">
-                <h1 className="text-2xl font-bold text-gray-800">
+                <h1 className="text-2xl font-bold text-white">
                   {formattedDate}
                 </h1>
               </div>
               <button onClick={handleNextMonth} className="">
                 <img
-                  src="icons/arrow.svg"
+                  src="icons/arrowWhite.svg"
                   width="20px"
                   alt="Next Month"
                   style={{ transform: "rotate(270deg)" }}

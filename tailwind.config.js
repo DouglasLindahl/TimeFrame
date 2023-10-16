@@ -19,7 +19,7 @@ module.exports = {
           dark: '#FF6B6B',
           light: '#FFA8A8',
         },
-        background: '#1c1c1c',
+        background: '#202020',
         text: {
           dark: '#333333',
           light: '#888888',

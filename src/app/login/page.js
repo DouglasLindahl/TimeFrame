@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import StartHeader from "@/components/startHeader/page";
 import { supabase } from "../../../supabase";
 import { useRouter } from "next/navigation";
+import HomeHeader from "@/components/header/page";
 
 export default function Login() {
     const router = useRouter();
@@ -26,7 +26,6 @@ const handleSubmit = async (e) => {
     });
 
     if (error) {
-      // Handle authentication error here
       console.log("Authentication error:", error);
       setLoginError("Email or password is incorrect");
     } else {
@@ -46,7 +45,7 @@ const handleSubmit = async (e) => {
 
   return (
     <>
-      <StartHeader></StartHeader>
+    <HomeHeader header={"start"}></HomeHeader>
       <p className="text-red-500">{loginError}</p>
       <section className="">
         <form onSubmit={handleSubmit}>

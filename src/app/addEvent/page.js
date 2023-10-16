@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import HomeHeader from "@/components/homeHeader/page";
+import HomeHeader from "@/components/header/page";
 import { supabase } from "../../../supabase";
 
 export default function AddEvent() {
@@ -32,7 +32,7 @@ export default function AddEvent() {
 
   return (
     <>
-      <HomeHeader></HomeHeader>
+      <HomeHeader header={"home"}></HomeHeader>
       <div className="container mx-auto mt-8">
         <h1 className="text-2xl font-semibold mb-4">Add Event</h1>
         <form onSubmit={handleSubmit}>

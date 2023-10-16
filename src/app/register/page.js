@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import StartHeader from "@/components/startHeader/page";
 import { supabase } from "../../../supabase";
 import { useRouter } from "next/navigation";
+import HomeHeader from "@/components/header/page";
 
 export default function Register() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function Register() {
 
   return (
     <>
-      <StartHeader></StartHeader>
+    <HomeHeader header={"start"}></HomeHeader>
       <section className="">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

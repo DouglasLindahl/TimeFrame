@@ -3,7 +3,7 @@ import { supabase } from "../../../../supabase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import HomeHeader from "@/components/homeHeader/page";
+import HomeHeader from "@/components/header/page";
 import SinglePageNavbar from "@/components/singlePageNavbar/page";
 
 const Slug = (id) => {

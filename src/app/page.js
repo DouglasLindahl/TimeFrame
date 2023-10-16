@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image";
-import Header from "@/components/startHeader/page";
+import HomeHeader from "@/components/header/page";
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <>
-      <Header></Header>
+    <HomeHeader></HomeHeader>
     </>
   );
 }
