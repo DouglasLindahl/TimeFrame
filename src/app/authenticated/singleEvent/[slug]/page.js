@@ -6,18 +6,60 @@ import Link from "next/link";
 import HomeHeader from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
 import styled from "styled-components";
+import { useQuery } from 'graphql-hooks';
+
+const COLOR_QUERY = `
+query{
+  main {
+    logo{
+      url
+    }
+    shadowColor{
+      hex
+    }
+    primaryColor{
+      hex
+    }
+    textColor{
+      hex
+    }
+    secondaryColor{
+      hex
+    }
+    backgroundPrimary{
+      hex
+    }
+    backgroundSecondary{
+      hex
+    }
+    currentDay{
+      hex
+    }
+    currentDayText{
+      hex
+    }
+    offDay{
+      hex
+    }
+    offDayText{
+      hex
+    }
+  }
+}
+`;
 
 const PageContainer = styled.section`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #202020;
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const EventContainer = styled.section`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  color: ${(props) => props.textcolor};
 `;
 
 const Content = styled.section`
@@ -36,7 +78,6 @@ const EventTitleContainer = styled.div`
 const EventTitle = styled.h1`
   font-size: 2rem;
   font-weight: 600;
-  color: var(--text);
 `;
 
 const EventDate = styled.h1`
@@ -60,7 +101,7 @@ const Form = styled.form`
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #606060;
+    color: ${(props) => props.textcolor};
   }
 
   input,
@@ -84,7 +125,7 @@ const Form = styled.form`
 
   button {
     width: 100%;
-    background-color: black;
+    background-color: ${(props) => props.backgroundcolor};
     color: white;
     padding: 0.5rem 0;
     border-radius: 0.25rem;
@@ -118,6 +159,11 @@ const Slug = (id) => {
   const [time, setTime] = useState("");
   const [color, setColor] = useState("");
   const [loading, setLoading] = useState(true);
+  const { data, error } = useQuery(COLOR_QUERY);
+
+  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
+  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || '303030';
+  const textColor = data?.main?.textColor?.hex || '303030';
 
   const handleSubmit = async (e) => {
     const {
@@ -204,10 +250,10 @@ const Slug = (id) => {
   {
     if (event && event.id) {
       return (
-        <PageContainer>
+        <PageContainer backgroundcolor={backgroundPrimary}>
           <HomeHeader header="home" />
           <Content>
-            <EventContainer>
+            <EventContainer textcolor={textColor}>
               <EventTitleContainer>
                 <EventTitle>{event.title}</EventTitle>
                 <EventDate>
@@ -217,7 +263,7 @@ const Slug = (id) => {
               <EventTime>{event.time.slice(0, 5)}</EventTime>
             </EventContainer>
             <FormContainer>
-              <Form onSubmit={handleSubmit}>
+              <Form textcolor={textColor} backgroundcolor={backgroundSecondary} onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="title">Title</label>
                   <StyledInput
