@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <>
-    <HomeHeader header={"start"}></HomeHeader>
+      <HomeHeader header={"start"}></HomeHeader>
     </>
   );
 }

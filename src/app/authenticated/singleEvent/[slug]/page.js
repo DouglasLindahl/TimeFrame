@@ -1,10 +1,111 @@
 "use client";
-import { supabase } from "../../../../supabase";
+import { supabase } from "../../../../../supabase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import HomeHeader from "@/components/header/page";
-import SinglePageNavbar from "@/components/singlePageNavbar/page";
+import Navbar from "@/components/navbar/page";
+import styled from "styled-components";
+
+const PageContainer = styled.section`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #202020;
+`;
+
+const EventContainer = styled.section`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Content = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+`;
+
+const EventTitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const EventTitle = styled.h1`
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+`;
+
+const EventDate = styled.h1`
+  font-size: 2rem;
+  font-weight: 600;
+`;
+
+const EventTime = styled.h1`
+  font-size: 2rem;
+  font-weight: 600;
+`;
+
+const FormContainer = styled.div`
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+`;
+
+const Form = styled.form`
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #606060;
+  }
+
+  input,
+  textarea,
+  select {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    outline: none;
+    transition: border 0.2s;
+
+    &:focus {
+      border: 1px solid #63b3ed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  button {
+    width: 100%;
+    background-color: black;
+    color: white;
+    padding: 0.5rem 0;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+    cursor: pointer;
+
+    &:hover {
+
+    }
+  }
+`;
+
+const StyledInput = styled.input`
+  height: 2.5rem;
+`;
+
+const StyledTextArea = styled.textarea`
+  min-height: 3rem;
+`;
+
 
 const Slug = (id) => {
   const router = useRouter();
@@ -70,7 +171,6 @@ const Slug = (id) => {
     updateInputFields();
   }, [event]);
 
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -78,124 +178,85 @@ const Slug = (id) => {
     return { day, month };
   };
 
-
   if (loading) {
     return <p>Loading...</p>;
   }
 
   if (event && event.id) {
     return (
-      <>
-      <section className="flex flex-col h-screen">
-        <HomeHeader></HomeHeader>
-        <section className="flex-grow flex flex-col gap-8 p-4 overflow-y-auto">
-          <div className="flex flex flex-col gap-4 pb-4 border-solid border-b-2 border-primary-dark">
-            <div className="flex justify-between">
-              <h1 className="text-4xl font-semibold text-text">{event.title}</h1>
-              <h1 className="text-4xl font-semibold text-text">{formatDate(event.date).day} {formatDate(event.date).month}</h1>
-            </div>
-            <div>
-              <h1 className="text-4xl font-semibold text-text">{event.time.slice(0, 5)}</h1>
-            </div>
-          </div>
-          <div>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  Title
-                </label>
-                <input
+      <PageContainer>
+        <HomeHeader header="home" />
+        <Content>
+          <EventContainer>
+            <EventTitleContainer>
+              <EventTitle>{event.title}</EventTitle>
+              <EventDate>
+                {formatDate(event.date).day} {formatDate(event.date).month}
+              </EventDate>
+            </EventTitleContainer>
+            <EventTime>{event.time.slice(0, 5)}</EventTime>
+          </EventContainer>
+          <FormContainer>
+            <Form onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="title">Title</label>
+                <StyledInput
                   type="text"
                   id="title"
                   name="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-200"
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  Description
-                </label>
-                <textarea
+              <div>
+                <label htmlFor="description">Description</label>
+                <StyledTextArea
                   id="description"
                   name="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows="4"
-                  className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-200"
-                ></textarea>
+                ></StyledTextArea>
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  Date
-                </label>
-                <input
+              <div>
+                <label htmlFor="date">Date</label>
+                <StyledInput
                   type="date"
                   id="date"
                   name="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-200"
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="time"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  Time
-                </label>
-                <input
+              <div>
+                <label htmlFor="time">Time</label>
+                <StyledInput
                   type="time"
                   id="time"
                   name="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-200"
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="color"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  Color
-                </label>
-                <input
+              <div>
+                <label htmlFor="color">Color</label>
+                <StyledInput
                   type="color"
                   id="color"
                   name="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-200"
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="w-full bg-primary-dark text-white py-2 rounded-md"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
-        </section>
-        <SinglePageNavbar id={event.id}></SinglePageNavbar>
-      </section>
-      </>
+              <button type="submit">Submit</button>
+            </Form>
+          </FormContainer>
+        </Content>
+        <Navbar navbar="singlePage" id={event.id}></Navbar>
+      </PageContainer>
     );
   }
 };

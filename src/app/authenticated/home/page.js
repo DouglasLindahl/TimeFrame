@@ -2,8 +2,8 @@
 import Image from "next/image";
 import HomeHeader from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
-import { supabase } from "../../../supabase";
-import { Calendar, dateFnsLocalizer} from "react-big-calendar";
+import { supabase } from "../../../../supabase";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import { startOfWeek, getDay, addDays } from "date-fns";
@@ -15,6 +15,7 @@ import { useCallback } from "react";
 import EventCard from "@/components/eventCard/page";
 import { Swipeable, useSwipeable } from "react-swipeable";
 import { useRouter } from "next/navigation";
+import styled from "styled-components";
 
 const locales = {
   "en-US": require("date-fns/locale/en-US"),
@@ -46,9 +47,60 @@ const eventStyle = (event, start, end, isSelected) => {
 const calendarStyle = () => {
   return {
     height: "100%",
-    // color: "white"
   };
 };
+const CardsContainer = styled.section`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #202020;
+`;
+
+const CardsContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+`;
+
+const CalendarSection = styled.section`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #202020;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+`;
+
+const Button = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 1rem;
+`;
+
+const DateContainer = styled.div`
+  width: 180px;
+  text-align: center;
+`;
+
+const DateText = styled.h1`
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+`;
+
+const CalendarContainer = styled.div`
+  flex: 1;
+  height: 100%;
+`;
 
 export default function Home() {
   const router = useRouter();
@@ -81,17 +133,16 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(session)
-    {
+    if (session) {
       const fetchUserInfo = async () => {
         const {
           data: { user },
         } = await supabase.auth.getUser();
         const { data, error } = await supabase
-        .from("UserInfo")
-        .select()
-        .eq("user_uuid", user.id);
-        
+          .from("UserInfo")
+          .select()
+          .eq("user_uuid", user.id);
+
         setUserInfo(data);
         setView(data[0].prefers_calendar);
       };
@@ -100,18 +151,17 @@ export default function Home() {
   }, [session]);
 
   useEffect(() => {
-    if(session)
-    {
+    if (session) {
       const fetchEvents = async () => {
         const {
           data: { user },
         } = await supabase.auth.getUser();
         const { data, error } = await supabase
-        .from("Events")
-        .select()
-        .eq("user_uuid", user.id)
-        .order(["date", "time"])
-        
+          .from("Events")
+          .select()
+          .eq("user_uuid", user.id)
+          .order(["date", "time"]);
+
         setEvents(data);
       };
       fetchEvents();
@@ -208,63 +258,55 @@ export default function Home() {
     if (!calendarView) {
       return (
         <>
-          <section className="h-screen flex flex-col bg-background">
-            <HomeHeader header={"home"}></HomeHeader>
-            <div className="h-full flex flex-col gap-6 py-6 px-4 overflow-y-auto">
-              {cardsComponent}
-            </div>
-            <Navbar view={calendarView} setView={setView}></Navbar>
-          </section>
-          <></>
+          <CardsContainer>
+            <HomeHeader header="home" />
+            <CardsContent>{cardsComponent}</CardsContent>
+            <Navbar navbar="home" view={calendarView} setView={setView} />
+          </CardsContainer>
         </>
       );
     } else if (calendarView) {
       return (
         <>
-          <section className="h-screen flex flex-col bg-background">
-            <HomeHeader header={"home"}></HomeHeader>
-            <div className="flex justify-center items-center my-4">
-              <button onClick={handlePreviousMonth} className="">
+          <CalendarSection>
+            <HomeHeader header="home" />
+            <ButtonContainer>
+              <Button onClick={handlePreviousMonth}>
                 <img
-                  src="icons/arrowWhite.svg"
+                  src="/icons/arrowWhite.svg"
                   width="20px"
                   alt="Next Month"
                   style={{ transform: "rotate(90deg)" }}
                 />
-              </button>
-              <div className="w-60 text-center">
-                <h1 className="text-2xl font-bold text-white">
-                  {formattedDate}
-                </h1>
-              </div>
-              <button onClick={handleNextMonth} className="">
+              </Button>
+              <DateContainer>
+                <DateText>{formattedDate}</DateText>
+              </DateContainer>
+              <Button onClick={handleNextMonth}>
                 <img
-                  src="icons/arrowWhite.svg"
+                  src="/icons/arrowWhite.svg"
                   width="20px"
                   alt="Next Month"
                   style={{ transform: "rotate(270deg)" }}
                 />
-              </button>
-            </div>
-            <div {...handlers} className="h-full">
-              <div className="h-full">
-                <Calendar
-                  className="h-full"
-                  localizer={localizer}
-                  events={formattedEvents}
-                  startAccessor={"start"}
-                  endAccessor={"end"}
-                  style={calendarStyle()}
-                  toolbar={false}
-                  eventPropGetter={eventStyle}
-                  onSelectEvent={goToSinglePage}
-                  date={currentDate}
-                  onNavigate={handleDateClick}
-                />
-              </div>
-            </div>
-            <Navbar view={calendarView} setView={setView}></Navbar>
-          </section>
+              </Button>
+            </ButtonContainer>
+            <CalendarContainer>
+              <Calendar
+                localizer={localizer}
+                events={formattedEvents}
+                startAccessor="start"
+                endAccessor="end"
+                style={calendarStyle()}
+                toolbar={false}
+                eventPropGetter={eventStyle}
+                onSelectEvent={goToSinglePage}
+                date={currentDate}
+                onNavigate={handleDateClick}
+              />
+            </CalendarContainer>
+            <Navbar navbar="home" view={calendarView} setView={setView} />
+          </CalendarSection>
         </>
       );
     }

@@ -31,7 +31,7 @@ const handleSubmit = async (e) => {
     } else {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        router.push("/home");
+        router.push("/authenticated/home");
       } else {
         console.log("wrong password");
         setLoginError("Email or password is incorrect");

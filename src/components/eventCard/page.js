@@ -1,11 +1,65 @@
 "use client";
 import { useRouter } from "next/navigation";
+import styled from "styled-components";
+
+const EventContainer = styled.button`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: space-between;
+  background-color: #303030;
+  color: white;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 5px 10px 5px #101010;
+`;
+
+const ColorStripeContainer = styled.div`
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+`;
+
+const InfoSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+const Title = styled.h1`
+  font-size: 30px;
+  text-align: left;
+  color: white;
+`;
+
+const Time = styled.p`
+font-size: 24px;
+`;
+
 
 export default function EventCard(props) {
+  const ColorStripe = styled.div`
+  position: absolute;
+  right: 0px;
+  bottom: -25px;
+  width: 18px;
+  height: 100px;
+  transform: rotate(45deg);
+  background-color: ${props.color};
+`;
   const router = useRouter();
 
   function redirectToSingleEvent() {
-    router.push(`singleEvent/${[props.id]}?id=${props.id}`);
+    router.push(`/authenticated/singleEvent/${[props.id]}?id=${props.id}`);
   }
 
   const formatDate = (dateString) => {
@@ -16,26 +70,20 @@ export default function EventCard(props) {
     const dateClassName = isCurrentDate ? "text-xl font-bold bg-primary-dark" : "text-xl";
 
     return (
-      <button
+      <EventContainer
         onClick={redirectToSingleEvent}
-        className={`relative flex flex-col items-left bg-[#303030] justify-between text-white py-4 px-6 font-semibold text-lg rounded-md shadow-lg shadow-[#101010]`}
       >
-        <div className="absolute right-0 bottom-0 w-20 h-20 overflow-hidden">
-        <div
-          style={{
-            backgroundColor: `${props.color}`,
-          }}
-          className="absolute right-4 bottom-[-20px] w-4 h-20 rotate-45"
-        ></div>
-        </div>
-        <div className="flex w-full items-center justify-between">
-          <h1 className="text-3xl text-left text-white">{props.title}</h1>
+        <ColorStripeContainer>
+          <ColorStripe></ColorStripe>
+        </ColorStripeContainer>
+        <InfoSection>
+          <Title>{props.title}</Title>
           <p className={dateClassName}>{`${day} ${month}`}</p>
-        </div>
-        <div className="w-full flex justify-between items-center">
-          <p className="font-semibold text-lg">{props.time.slice(0, 5)}</p>
-        </div>
-      </button>
+        </InfoSection>
+        <InfoSection>
+          <Time>{props.time.slice(0, 5)}</Time>
+        </InfoSection>
+      </EventContainer>
     );
   };
 
