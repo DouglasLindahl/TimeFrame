@@ -139,7 +139,7 @@ const DateContainer = styled.div`
 const DateText = styled.h1`
   font-size: 1.25rem;
   font-weight: bold;
-  color: ${(props) => props.textColor};
+  color: ${(props) => props.textcolor};
 `;
 
 const CalendarContainer = styled.div`
@@ -371,7 +371,7 @@ export default function Home() {
                 />
               </Button>
               <DateContainer>
-                <DateText textColor={textColor}>{formattedDate}</DateText>
+                <DateText textcolor={textColor}>{formattedDate}</DateText>
               </DateContainer>
               <Button onClick={handleNextMonth}>
                 <img

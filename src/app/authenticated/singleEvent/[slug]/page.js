@@ -64,8 +64,7 @@ const Form = styled.form`
   }
 
   input,
-  textarea,
-  select {
+  textarea{
     margin-top: 0.25rem;
     padding: 0.5rem;
     width: 100%;
@@ -110,6 +109,8 @@ const StyledTextArea = styled.textarea`
 const Slug = (id) => {
   const router = useRouter();
   const [event, setEvent] = useState(null);
+  const [user, setUser] = useState(null);
+  const [authenticated, setAuthenticated] = useState(false);
   const [eventId, setEventId] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -147,6 +148,7 @@ const Slug = (id) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      setUser(user);
       const { data } = await supabase
         .from("Events")
         .select()
@@ -157,7 +159,23 @@ const Slug = (id) => {
     };
     fetchEvent();
   }, [eventId]);
-
+  useEffect(()=>{
+    const checkAuthentication = async () => {
+      if(event && user)
+      {
+        if(event.user_uuid != user.id)
+        {
+          router.push("/authenticated/home");
+        }
+        else
+        {
+          setAuthenticated(true);
+        }
+      }
+    }
+    checkAuthentication();
+  },[event])
+  
   useEffect(() => {
     const updateInputFields = async () => {
       if (event) {
@@ -182,82 +200,93 @@ const Slug = (id) => {
     return <p>Loading...</p>;
   }
 
-  if (event && event.id) {
-    return (
-      <PageContainer>
-        <HomeHeader header="home" />
-        <Content>
-          <EventContainer>
-            <EventTitleContainer>
-              <EventTitle>{event.title}</EventTitle>
-              <EventDate>
-                {formatDate(event.date).day} {formatDate(event.date).month}
-              </EventDate>
-            </EventTitleContainer>
-            <EventTime>{event.time.slice(0, 5)}</EventTime>
-          </EventContainer>
-          <FormContainer>
-            <Form onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="title">Title</label>
-                <StyledInput
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="description">Description</label>
-                <StyledTextArea
-                  id="description"
-                  name="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                ></StyledTextArea>
-              </div>
-              <div>
-                <label htmlFor="date">Date</label>
-                <StyledInput
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="time">Time</label>
-                <StyledInput
-                  type="time"
-                  id="time"
-                  name="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="color">Color</label>
-                <StyledInput
-                  type="color"
-                  id="color"
-                  name="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit">Submit</button>
-            </Form>
-          </FormContainer>
-        </Content>
-        <Navbar navbar="singlePage" id={event.id}></Navbar>
-      </PageContainer>
-    );
+  if(authenticated)
+  {
+    if (event && event.id) {
+      return (
+        <PageContainer>
+          <HomeHeader header="home" />
+          <Content>
+            <EventContainer>
+              <EventTitleContainer>
+                <EventTitle>{event.title}</EventTitle>
+                <EventDate>
+                  {formatDate(event.date).day} {formatDate(event.date).month}
+                </EventDate>
+              </EventTitleContainer>
+              <EventTime>{event.time.slice(0, 5)}</EventTime>
+            </EventContainer>
+            <FormContainer>
+              <Form onSubmit={handleSubmit}>
+                <div>
+                  <label htmlFor="title">Title</label>
+                  <StyledInput
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="description">Description</label>
+                  <StyledTextArea
+                    id="description"
+                    name="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  ></StyledTextArea>
+                </div>
+                <div>
+                  <label htmlFor="date">Date</label>
+                  <StyledInput
+                    type="date"
+                    id="date"
+                    name="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="time">Time</label>
+                  <StyledInput
+                    type="time"
+                    id="time"
+                    name="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="color">Color</label>
+                  <StyledInput
+                    type="color"
+                    id="color"
+                    name="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit">Submit</button>
+              </Form>
+            </FormContainer>
+          </Content>
+          <Navbar navbar="singlePage" id={event.id}></Navbar>
+        </PageContainer>
+      );
+  }
+  }
+  else
+  {
+    return(
+      <>
+        <p>Loading...</p>
+      </>
+    )
   }
 };
 
