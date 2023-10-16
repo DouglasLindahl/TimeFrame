@@ -8,6 +8,7 @@ const nextConfig = {
   }),
   env: {
     SUPABASE_KEY: process.env.SUPABASE_KEY,
+    CMS_API_TOKEN: process.env.CMS_API_TOKEN,
   },
 };
 

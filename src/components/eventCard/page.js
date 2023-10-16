@@ -1,6 +1,29 @@
 "use client";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
+import { useQuery } from 'graphql-hooks';
+
+const COLOR_QUERY = `
+query{
+  main {
+    primaryColor{
+      hex
+    }
+    textColor{
+      hex
+    }
+    secondaryColor{
+      hex
+    }
+    backgroundPrimary{
+      hex
+    }
+    backgroundSecondary{
+      hex
+    }
+  }
+}
+`;
 
 const EventContainer = styled.button`
   position: relative;
@@ -8,8 +31,8 @@ const EventContainer = styled.button`
   flex-direction: column;
   align-items: left;
   justify-content: space-between;
-  background-color: #303030;
-  color: white;
+  background-color: ${(props) => props.backgroundcolor};
+  color: ${(props) => props.textcolor};
   padding-left: 16px;
   padding-right: 16px;
   padding-top: 8px;
@@ -38,25 +61,29 @@ const InfoSection = styled.div`
 const Title = styled.h1`
   font-size: 30px;
   text-align: left;
-  color: white;
 `;
 
 const Time = styled.p`
 font-size: 24px;
 `;
+const ColorStripe = styled.div`
+position: absolute;
+right: 0px;
+bottom: -25px;
+width: 18px;
+height: 100px;
+transform: rotate(45deg);
+background-color: ${(props) => props.color};
+`;
 
 
 export default function EventCard(props) {
-  const ColorStripe = styled.div`
-  position: absolute;
-  right: 0px;
-  bottom: -25px;
-  width: 18px;
-  height: 100px;
-  transform: rotate(45deg);
-  background-color: ${props.color};
-`;
   const router = useRouter();
+  const { data, loading, error } = useQuery(COLOR_QUERY);
+
+  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
+  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || '303030';
+  const textColor = data?.main?.textColor?.hex || '303030';
 
   function redirectToSingleEvent() {
     router.push(`/authenticated/singleEvent/${[props.id]}?id=${props.id}`);
@@ -71,10 +98,12 @@ export default function EventCard(props) {
 
     return (
       <EventContainer
+        backgroundcolor={backgroundSecondary}
+        textcolor={textColor}
         onClick={redirectToSingleEvent}
       >
         <ColorStripeContainer>
-          <ColorStripe></ColorStripe>
+          <ColorStripe color={props.color}></ColorStripe>
         </ColorStripeContainer>
         <InfoSection>
           <Title>{props.title}</Title>

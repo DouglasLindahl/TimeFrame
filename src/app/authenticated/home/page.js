@@ -16,6 +16,30 @@ import EventCard from "@/components/eventCard/page";
 import { Swipeable, useSwipeable } from "react-swipeable";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
+import { GraphQLClient, ClientContext } from 'graphql-hooks';
+import { useQuery } from 'graphql-hooks';
+
+const COLOR_QUERY = `
+query{
+  main {
+    primaryColor{
+      hex
+    }
+    textColor{
+      hex
+    }
+    secondaryColor{
+      hex
+    }
+    backgroundPrimary{
+      hex
+    }
+    backgroundSecondary{
+      hex
+    }
+  }
+}
+`;
 
 const locales = {
   "en-US": require("date-fns/locale/en-US"),
@@ -49,11 +73,13 @@ const calendarStyle = () => {
     height: "100%",
   };
 };
+
+
 const CardsContainer = styled.section`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #202020;
+height: 100vh;
+display: flex;
+flex-direction: column;
+background-color: ${(props) => props.backgroundcolor};
 `;
 
 const CardsContent = styled.div`
@@ -69,7 +95,7 @@ const CalendarSection = styled.section`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #202020;
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const ButtonContainer = styled.div`
@@ -77,6 +103,7 @@ const ButtonContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 `;
 
 const Button = styled.button`
@@ -94,7 +121,7 @@ const DateContainer = styled.div`
 const DateText = styled.h1`
   font-size: 1.25rem;
   font-weight: bold;
-  color: white;
+  color: ${(props) => props.textColor};
 `;
 
 const CalendarContainer = styled.div`
@@ -112,6 +139,13 @@ export default function Home() {
   const [user, setUser] = useState("");
   const [session, setSession] = useState(false);
 
+  const { data, loading, error } = useQuery(COLOR_QUERY);
+
+  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
+  const textColor = data?.main?.textColor?.hex || '303030';
+
+
+
   useEffect(() => {
     const checkUserSession = async () => {
       const session = supabase.auth.getSession();
@@ -128,7 +162,6 @@ export default function Home() {
 
   function goToSinglePage(event) {
     const eventId = event.id;
-    console.log(`Clicked on event with id: ${eventId}`);
     router.push(`singleEvent/${[eventId]}?id=${eventId}`);
   }
 
@@ -216,13 +249,11 @@ export default function Home() {
     const nextMonthDate = new Date(currentDate);
     nextMonthDate.setMonth(currentDate.getMonth() + 1);
     setCurrentDate(nextMonthDate);
-    console.log(currentDate);
   };
   const handlePreviousMonth = () => {
     const nextMonthDate = new Date(currentDate);
     nextMonthDate.setMonth(currentDate.getMonth() - 1);
     setCurrentDate(nextMonthDate);
-    console.log(currentDate);
   };
 
   const handleDateClick = (date, view, e) => {
@@ -258,7 +289,7 @@ export default function Home() {
     if (!calendarView) {
       return (
         <>
-          <CardsContainer>
+          <CardsContainer backgroundcolor={backgroundPrimary}>
             <HomeHeader header="home" />
             <CardsContent>{cardsComponent}</CardsContent>
             <Navbar navbar="home" view={calendarView} setView={setView} />
@@ -268,7 +299,7 @@ export default function Home() {
     } else if (calendarView) {
       return (
         <>
-          <CalendarSection>
+          <CalendarSection backgroundcolor={backgroundPrimary}>
             <HomeHeader header="home" />
             <ButtonContainer>
               <Button onClick={handlePreviousMonth}>
@@ -280,7 +311,7 @@ export default function Home() {
                 />
               </Button>
               <DateContainer>
-                <DateText>{formattedDate}</DateText>
+                <DateText textColor={textColor}>{formattedDate}</DateText>
               </DateContainer>
               <Button onClick={handleNextMonth}>
                 <img

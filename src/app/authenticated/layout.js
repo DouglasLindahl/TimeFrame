@@ -2,6 +2,14 @@
 import { supabase } from "../../../supabase";
 import { useRouter } from "next/navigation";
 import react, { useEffect, useState } from "react";
+import { GraphQLClient, ClientContext } from 'graphql-hooks';
+
+const client = new GraphQLClient({
+  url: 'https://graphql.datocms.com/',
+  headers: {
+      Authorization: `Bearer ${process.env.CMS_API_TOKEN}`,
+  },
+});
 
 export default function ProtectedLayout({ children }) {
   const [session, setSession] = useState(false);
@@ -24,6 +32,10 @@ export default function ProtectedLayout({ children }) {
   if (!isSuccess) {
     <p>Loading...</p>;
   } else {
-    return <main>{children}</main>;
+    return (
+      <ClientContext.Provider value={client}>
+        <main>{children}</main>
+      </ClientContext.Provider>
+    );
   }
 }
