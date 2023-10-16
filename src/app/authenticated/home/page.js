@@ -22,6 +22,12 @@ import { useQuery } from 'graphql-hooks';
 const COLOR_QUERY = `
 query{
   main {
+    logo{
+      url
+    }
+    shadowColor{
+      hex
+    }
     primaryColor{
       hex
     }
@@ -35,6 +41,18 @@ query{
       hex
     }
     backgroundSecondary{
+      hex
+    }
+    currentDay{
+      hex
+    }
+    currentDayText{
+      hex
+    }
+    offDay{
+      hex
+    }
+    offDayText{
       hex
     }
   }
@@ -142,7 +160,49 @@ export default function Home() {
   const { data, loading, error } = useQuery(COLOR_QUERY);
 
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
+  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || '303030';
   const textColor = data?.main?.textColor?.hex || '303030';
+  const offDayText = data?.main?.offDayText?.hex || '303030';
+  const offDay = data?.main?.offDay?.hex || '303030';
+  const currentDay = data?.main?.currentDay?.hex || '303030';
+  const currentDayText = data?.main?.currentDayText?.hex || '303030';
+
+
+  // Dynamically generate CSS for your calendar styles
+  const dynamicStyles = `
+    .rbc-today {
+      background-color: ${currentDay} !important;
+    }
+    .rbc-current{
+      color: ${currentDayText} !important;
+    }
+    .rbc-off-range-bg {
+      background-color: ${offDay} !important;
+    }
+    .rbc-month-view {
+      color: ${textColor} !important;
+      border: none !important;
+    }
+    .rbc-header {
+      border: none !important;
+    }
+    .rbc-month-row {
+      border: none !important;
+    }
+    .rbc-off-range {
+      color: ${offDayText} !important;
+    }
+    .rbc-day-bg {
+      border: none !important;
+      background-color: #303030;
+      border-radius: 5px;
+      margin: 2px;
+    }
+  `;
+  const styleSheet = document.createElement('style');
+  styleSheet.type = 'text/css';
+  styleSheet.innerText = dynamicStyles;
+  document.head.appendChild(styleSheet);
 
 
 
@@ -328,7 +388,6 @@ export default function Home() {
                 events={formattedEvents}
                 startAccessor="start"
                 endAccessor="end"
-                style={calendarStyle()}
                 toolbar={false}
                 eventPropGetter={eventStyle}
                 onSelectEvent={goToSinglePage}
