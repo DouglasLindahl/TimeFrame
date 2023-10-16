@@ -25,7 +25,7 @@ export default function Home() {
     }
     if(user)
     {
-      router.push(`/home`);
+      router.push(`/authenticated/home`);
     }
   },[user])
 
