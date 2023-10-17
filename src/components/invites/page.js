@@ -4,6 +4,7 @@ import InviteCard from "../inviteCard/page";
 
 export default function Invites() {
   const [invites, setInvites] = useState("");
+  const [rerender, setRerender] = useState(false);
 
   useEffect(() => {
     const fetchInvites = async () => {
@@ -17,7 +18,9 @@ export default function Invites() {
       setInvites(data);
     };
     fetchInvites();
-  }, []);
+  }, [rerender]);
+
+
 
   let invitesComponent = null;
   if (Array.isArray(invites)) {
@@ -28,6 +31,8 @@ export default function Invites() {
         sender={invite.sender_uuid}
         receiver={invite.receiver_uuid}
         event_id={invite.event_id}
+        setRerender={setRerender}
+        rerender={rerender}
       />
     ));
   }
