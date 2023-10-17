@@ -266,6 +266,7 @@ export default function Home() {
           .eq("archived", false);
 
         const today = new Date();
+        today.setDate(today.getDate() - 1);
         console.log(today);
 
         for (const event of data) {
