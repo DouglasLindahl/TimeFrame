@@ -6,7 +6,7 @@ import Link from "next/link";
 import HomeHeader from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
 import styled from "styled-components";
-import { useQuery } from 'graphql-hooks';
+import { useQuery } from "graphql-hooks";
 
 const COLOR_QUERY = `
 query{
@@ -105,7 +105,7 @@ const Form = styled.form`
   }
 
   input,
-  textarea{
+  textarea {
     margin-top: 0.25rem;
     padding: 0.5rem;
     width: 100%;
@@ -133,7 +133,6 @@ const Form = styled.form`
     cursor: pointer;
 
     &:hover {
-
     }
   }
 `;
@@ -146,6 +145,20 @@ const StyledTextArea = styled.textarea`
   min-height: 3rem;
 `;
 
+const InviteForm = styled.form`
+  color: white;
+  input,
+  textarea {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    outline: none;
+    transition: border 0.2s;
+    color: black;
+  }
+`;
 
 const Slug = (id) => {
   const router = useRouter();
@@ -158,12 +171,36 @@ const Slug = (id) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [color, setColor] = useState("");
+  const [invitedUser, setInvitedUser] = useState("");
   const [loading, setLoading] = useState(true);
   const { data, error } = useQuery(COLOR_QUERY);
 
-  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
-  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || '303030';
-  const textColor = data?.main?.textColor?.hex || '303030';
+  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
+  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
+  const textColor = data?.main?.textColor?.hex || "303030";
+
+  const handleInvite = async (e) => {
+    e.preventDefault();
+    if(invitedUser)
+    {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("UserInfo")
+        .select()
+        .eq("email", invitedUser);
+
+        if(data.length > 0)
+        {
+          const {} = await supabase.from("Invites").insert({
+            sender_uuid: user.id,
+            receiver_uuid: data[0].user_uuid,
+            event_id: event.id,
+          });
+        }
+    }
+  };
 
   const handleSubmit = async (e) => {
     const {
@@ -205,23 +242,19 @@ const Slug = (id) => {
     };
     fetchEvent();
   }, [eventId]);
-  useEffect(()=>{
+  useEffect(() => {
     const checkAuthentication = async () => {
-      if(event && user)
-      {
-        if(event.user_uuid != user.id)
-        {
+      if (event && user) {
+        if (event.user_uuid != user.id) {
           router.push("/authenticated/home");
-        }
-        else
-        {
+        } else {
           setAuthenticated(true);
         }
       }
-    }
+    };
     checkAuthentication();
-  },[event])
-  
+  }, [event]);
+
   useEffect(() => {
     const updateInputFields = async () => {
       if (event) {
@@ -246,8 +279,7 @@ const Slug = (id) => {
     return <p>Loading...</p>;
   }
 
-  if(authenticated)
-  {
+  if (authenticated) {
     if (event && event.id) {
       return (
         <PageContainer backgroundcolor={backgroundPrimary}>
@@ -263,7 +295,11 @@ const Slug = (id) => {
               <EventTime>{event.time.slice(0, 5)}</EventTime>
             </EventContainer>
             <FormContainer>
-              <Form textcolor={textColor} backgroundcolor={backgroundSecondary} onSubmit={handleSubmit}>
+              <Form
+                textcolor={textColor}
+                backgroundcolor={backgroundSecondary}
+                onSubmit={handleSubmit}
+              >
                 <div>
                   <label htmlFor="title">Title</label>
                   <StyledInput
@@ -320,19 +356,29 @@ const Slug = (id) => {
                 <button type="submit">Submit</button>
               </Form>
             </FormContainer>
+            <InviteForm onSubmit={handleInvite}>
+              <div>
+                <label htmlFor="inviteUser">Invite</label>
+                <StyledInput
+                  type="text"
+                  id="inviteUser"
+                  name="inviteUser"
+                  onChange={(e) => setInvitedUser(e.target.value)}
+                />
+              </div>
+              <button type="submit">Submit</button>
+            </InviteForm>
           </Content>
           <Navbar navbar="singlePage" id={event.id}></Navbar>
         </PageContainer>
       );
-  }
-  }
-  else
-  {
-    return(
+    }
+  } else {
+    return (
       <>
         <p>Loading...</p>
       </>
-    )
+    );
   }
 };
 

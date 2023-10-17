@@ -16,8 +16,8 @@ import EventCard from "@/components/eventCard/page";
 import { Swipeable, useSwipeable } from "react-swipeable";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import { GraphQLClient, ClientContext } from 'graphql-hooks';
-import { useQuery } from 'graphql-hooks';
+import { GraphQLClient, ClientContext } from "graphql-hooks";
+import { useQuery } from "graphql-hooks";
 
 const COLOR_QUERY = `
 query{
@@ -92,12 +92,11 @@ const calendarStyle = () => {
   };
 };
 
-
 const CardsContainer = styled.section`
-height: 100vh;
-display: flex;
-flex-direction: column;
-background-color: ${(props) => props.backgroundcolor};
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const CardsContent = styled.div`
@@ -159,14 +158,13 @@ export default function Home() {
 
   const { data, loading, error } = useQuery(COLOR_QUERY);
 
-  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
-  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || '303030';
-  const textColor = data?.main?.textColor?.hex || '303030';
-  const offDayText = data?.main?.offDayText?.hex || '303030';
-  const offDay = data?.main?.offDay?.hex || '303030';
-  const currentDay = data?.main?.currentDay?.hex || '303030';
-  const currentDayText = data?.main?.currentDayText?.hex || '303030';
-
+  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
+  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
+  const textColor = data?.main?.textColor?.hex || "303030";
+  const offDayText = data?.main?.offDayText?.hex || "303030";
+  const offDay = data?.main?.offDay?.hex || "303030";
+  const currentDay = data?.main?.currentDay?.hex || "303030";
+  const currentDayText = data?.main?.currentDayText?.hex || "303030";
 
   // Dynamically generate CSS for your calendar styles
   const dynamicStyles = `
@@ -199,11 +197,10 @@ export default function Home() {
       margin: 2px;
     }
   `;
-  const styleSheet = document.createElement('style');
-  styleSheet.type = 'text/css';
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
   styleSheet.innerText = dynamicStyles;
   document.head.appendChild(styleSheet);
-
 
 
   useEffect(() => {
@@ -250,11 +247,11 @@ export default function Home() {
           data: { user },
         } = await supabase.auth.getUser();
         const { data, error } = await supabase
-        .from("Events")
-        .select()
-        .eq("user_uuid", user.id)
-        .eq("archived", false)
-        .order(["date", "time"]);      
+          .from("Events")
+          .select()
+          .eq("user_uuid", user.id)
+          .eq("archived", false)
+          .order(["date", "time"]);
 
         setEvents(data);
       };
@@ -263,10 +260,10 @@ export default function Home() {
           data: { user },
         } = await supabase.auth.getUser();
         const { data, error } = await supabase
-        .from("Events")
-        .select()
-        .eq("user_uuid", user.id)
-        .eq("archived", false)
+          .from("Events")
+          .select()
+          .eq("user_uuid", user.id)
+          .eq("archived", false);
 
         const today = new Date();
         console.log(today);
@@ -285,7 +282,6 @@ export default function Home() {
       fetchEvents();
     }
   }, [session]);
-  
 
   useEffect(() => {
     const reformatEvents = () => {

@@ -11,9 +11,8 @@ const Container = styled.section`
   flex-direction: column;
 `;
 const FormContainer = styled.div`
-  margin: 2rem auto;
   width: 100%;
-  padding: 0 1rem;
+  padding: 16px;
   height: 100%;
   overflow-y: auto;
 `;
