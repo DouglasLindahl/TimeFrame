@@ -13,7 +13,6 @@ export default function InvitedUser(props) {
     }
     fetchInvitedUserInfo();
   }, []);
-  console.log(invitedUserInfo)
 
   if(invitedUserInfo)
   {
