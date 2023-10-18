@@ -164,6 +164,7 @@ const Slug = (id) => {
   const router = useRouter();
   const [event, setEvent] = useState(null);
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [eventId, setEventId] = useState(null);
   const [title, setTitle] = useState("");
@@ -179,26 +180,40 @@ const Slug = (id) => {
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
 
-  const handleInvite = async (e) => {
-    e.preventDefault();
-    if(invitedUser)
-    {
+  useEffect(() => {
+    async function checkProfile() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from("UserInfo")
         .select()
-        .eq("email", invitedUser);
+        .eq("user_uuid", user.id);
+      if (data.length > 0) {
+        setUserProfile(data);
+      }
+    }
+    checkProfile();
+  }, []);
 
-        if(data.length > 0)
-        {
-          const {} = await supabase.from("Invites").insert({
-            sender_uuid: user.id,
-            receiver_uuid: data[0].user_uuid,
-            event_id: event.id,
-          });
-        }
+  const handleInvite = async (e) => {
+    e.preventDefault();
+    if (invitedUser) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("UserInfo")
+        .select()
+        .eq("username", invitedUser);
+
+      if (data.length > 0) {
+        const {} = await supabase.from("Invites").insert({
+          sender_uuid: user.id,
+          receiver_uuid: data[0].user_uuid,
+          event_id: event.id,
+        });
+      }
     }
   };
 
@@ -356,18 +371,26 @@ const Slug = (id) => {
                 <button type="submit">Submit</button>
               </Form>
             </FormContainer>
-            <InviteForm onSubmit={handleInvite}>
-              <div>
-                <label htmlFor="inviteUser">Invite</label>
-                <StyledInput
-                  type="text"
-                  id="inviteUser"
-                  name="inviteUser"
-                  onChange={(e) => setInvitedUser(e.target.value)}
-                />
-              </div>
-              <button type="submit">Submit</button>
-            </InviteForm>
+            {userProfile && (
+              <InviteForm onSubmit={handleInvite}>
+                <div>
+                  <label htmlFor="inviteUser">Invite</label>
+                  <StyledInput
+                    type="text"
+                    id="inviteUser"
+                    name="inviteUser"
+                    onChange={(e) => setInvitedUser(e.target.value)}
+                  />
+                </div>
+                <button type="submit">Submit</button>
+              </InviteForm>
+            )}
+            {!userProfile && (
+              <>
+                <h1 className="text-white">Create a profile in order to invite friends to your events</h1>
+                <Link className="text-white" href="/authenticated/settings">- Create Profile -</Link>
+              </>
+            )}
           </Content>
           <Navbar navbar="singlePage" id={event.id}></Navbar>
         </PageContainer>
