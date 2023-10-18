@@ -14,7 +14,8 @@ export default function Invites() {
       const { data, error } = await supabase
         .from("Invites")
         .select()
-        .eq("receiver_uuid", user.id);
+        .eq("receiver_uuid", user.id)
+        .eq("status", "pending");
       setInvites(data);
     };
     fetchInvites();

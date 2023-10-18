@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import HomeHeader from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
 import { supabase } from "../../../../supabase";
@@ -9,8 +8,6 @@ import parse from "date-fns/parse";
 import { startOfWeek, getDay, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import react, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
-
 import { useCallback } from "react";
 import EventCard from "@/components/eventCard/page";
 import { Swipeable, useSwipeable } from "react-swipeable";
@@ -148,6 +145,7 @@ const CalendarContainer = styled.div`
 
 export default function Home() {
   const router = useRouter();
+  const [userProfile, setUserProfile] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarView, setView] = useState(false);
   const [events, setEvents] = useState("");
@@ -204,6 +202,22 @@ export default function Home() {
 
 
   useEffect(() => {
+    async function checkProfile() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("UserInfo")
+        .select()
+        .eq("user_uuid", user.id);
+      if (data.length > 0) {
+        setUserProfile(data);
+      }
+    }
+    checkProfile();
+  }, []);
+
+  useEffect(() => {
     const checkUserSession = async () => {
       const session = supabase.auth.getSession();
       if (session) {
@@ -224,21 +238,28 @@ export default function Home() {
 
   useEffect(() => {
     if (session) {
-      const fetchUserInfo = async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        const { data, error } = await supabase
-          .from("UserInfo")
-          .select()
-          .eq("user_uuid", user.id);
-
-        setUserInfo(data);
-        setView(data[0].prefers_calendar);
-      };
-      fetchUserInfo();
-    }
-  }, [session]);
+      if(userProfile)
+      {
+        const fetchUserInfo = async () => {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          const { data, error } = await supabase
+            .from("UserInfo")
+            .select()
+            .eq("user_uuid", user.id);
+  
+          setUserInfo(data);
+          setView(data[0].prefers_calendar);
+        };
+        fetchUserInfo();
+      }
+      else
+      {
+        setView(false);
+      }
+      }
+  }, [session, userProfile]);
 
   useEffect(() => {
     if (session) {

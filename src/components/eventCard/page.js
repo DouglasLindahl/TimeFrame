@@ -93,8 +93,6 @@ export default function EventCard(props) {
     const date = new Date(dateString);
     const day = date.getDate();
     const month = date.toLocaleString("en-US", { month: "short" });
-    const isCurrentDate = isToday(date);
-    const dateClassName = isCurrentDate;
 
     return (
       <EventContainer
@@ -107,7 +105,7 @@ export default function EventCard(props) {
         </ColorStripeContainer>
         <InfoSection>
           <Title>{props.title}</Title>
-          <p className={dateClassName}>{`${day} ${month}`}</p>
+          <p>{`${day} ${month}`}</p>
         </InfoSection>
         <InfoSection>
           <Time>{props.time.slice(0, 5)}</Time>

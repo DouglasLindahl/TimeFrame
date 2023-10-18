@@ -120,8 +120,26 @@ const ReturnButton = styled(Link)`
 
 export default function Navbar(props) {
   const [userInfo, setUserInfo] = useState("");
+  const [userProfile, setUserProfile] = useState("");
   const router = useRouter();
   const [isConfirmingRemoval, setConfirmingRemoval] = useState(false);
+
+
+  useEffect(() => {
+    async function checkProfile() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("UserInfo")
+        .select()
+        .eq("user_uuid", user.id);
+      if (data.length > 0) {
+        setUserProfile(data);
+      }
+    }
+    checkProfile();
+  }, []);
 
   const removeEvent = async () => {
     const { error } = await supabase.from("Events").delete().eq("id", props.id);
@@ -137,14 +155,17 @@ export default function Navbar(props) {
   };
 
   async function updateView() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from('UserInfo')
-      .update({ prefers_calendar: !props.view })
-      .eq('user_uuid', user.id)
-    props.setView(!props.view);
+    if(userProfile)
+    {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from('UserInfo')
+        .update({ prefers_calendar: !props.view })
+        .eq('user_uuid', user.id)
+      }
+      props.setView(!props.view);
   }
 
   if (props.navbar === "home") {

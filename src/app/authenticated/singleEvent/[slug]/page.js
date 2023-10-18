@@ -6,6 +6,7 @@ import Link from "next/link";
 import HomeHeader from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
 import styled from "styled-components";
+import InvitedUser from "@/components/invitedUser/page";
 import { useQuery } from "graphql-hooks";
 
 const COLOR_QUERY = `
@@ -164,6 +165,7 @@ const Slug = (id) => {
   const router = useRouter();
   const [event, setEvent] = useState(null);
   const [user, setUser] = useState(null);
+  const [invitedUsers, setInvitedUsers] = useState("");
   const [userProfile, setUserProfile] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [eventId, setEventId] = useState(null);
@@ -212,6 +214,7 @@ const Slug = (id) => {
           sender_uuid: user.id,
           receiver_uuid: data[0].user_uuid,
           event_id: event.id,
+          status: "pending",
         });
       }
     }
@@ -282,6 +285,19 @@ const Slug = (id) => {
     };
     updateInputFields();
   }, [event]);
+  useEffect(() => {
+    async function fetchInvitedUsers() {
+      if(event)
+      {
+        const { data, error } = await supabase
+        .from("Invites")
+        .select()
+        .eq("event_id", event.id);
+        setInvitedUsers(data);
+      }
+    }
+    fetchInvitedUsers();
+  }, [event]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -289,6 +305,19 @@ const Slug = (id) => {
     const month = date.toLocaleString("en-US", { month: "short" });
     return { day, month };
   };
+
+
+
+  let invitedUsersComponent = null;
+  if (Array.isArray(invitedUsers)) {
+    invitedUsersComponent = invitedUsers.map((invitedUser) => (
+      <InvitedUser
+        key={invitedUser.id}
+        receiver={invitedUser.receiver_uuid}
+        status={invitedUser.status}
+      />
+    ));
+  }
 
   if (loading) {
     return <p>Loading...</p>;
@@ -372,23 +401,32 @@ const Slug = (id) => {
               </Form>
             </FormContainer>
             {userProfile && (
-              <InviteForm onSubmit={handleInvite}>
-                <div>
-                  <label htmlFor="inviteUser">Invite</label>
-                  <StyledInput
-                    type="text"
-                    id="inviteUser"
-                    name="inviteUser"
-                    onChange={(e) => setInvitedUser(e.target.value)}
-                  />
-                </div>
-                <button type="submit">Submit</button>
-              </InviteForm>
+              <section>
+                <InviteForm onSubmit={handleInvite}>
+                  <div>
+                    <label htmlFor="inviteUser">Invite</label>
+                    <StyledInput
+                      type="text"
+                      id="inviteUser"
+                      name="inviteUser"
+                      onChange={(e) => setInvitedUser(e.target.value)}
+                    />
+                  </div>
+                  <button type="submit">Submit</button>
+                </InviteForm>
+                <section className="text-white">
+                  {invitedUsersComponent}
+                </section>
+              </section>
             )}
             {!userProfile && (
               <>
-                <h1 className="text-white">Create a profile in order to invite friends to your events</h1>
-                <Link className="text-white" href="/authenticated/settings">- Create Profile -</Link>
+                <h1 className="text-white">
+                  Create a profile in order to invite friends to your events
+                </h1>
+                <Link className="text-white" href="/authenticated/settings">
+                  - Create Profile -
+                </Link>
               </>
             )}
           </Content>

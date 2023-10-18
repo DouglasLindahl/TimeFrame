@@ -3,7 +3,6 @@ import { supabase } from "../../../supabase";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
-
 const CardContainer = styled.div`
   background: #fff;
   border-radius: 4px;
@@ -38,7 +37,7 @@ const Time = styled.p`
 `;
 
 const AcceptButton = styled.button`
-  background: #4CAF50;
+  background: #4caf50;
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -48,12 +47,12 @@ const AcceptButton = styled.button`
   font-size: 16px;
 
   &:hover {
-    background: #45A049;
+    background: #45a049;
   }
 `;
 
 const DeclineButton = styled.button`
-  background: #F44336;
+  background: #f44336;
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -62,10 +61,9 @@ const DeclineButton = styled.button`
   font-size: 16px;
 
   &:hover {
-    background: #D32F2F;
+    background: #d32f2f;
   }
 `;
-
 
 export default function InviteCard(props) {
   const [sender, setSender] = useState("");
@@ -84,11 +82,19 @@ export default function InviteCard(props) {
       color: event[0].color,
       user_uuid: user.id,
     });
-    const {} = await supabase.from("Invites").delete().eq("id", props.id);
+    // const {} = await supabase.from("Invites").delete().eq("id", props.id);
+
+    const {} = await supabase
+      .from("Invites")
+      .update({ status: "accepted" })
+      .eq("id", props.id);
     props.setRerender(!props.rerender);
   }
-  async function declineInvite(){
-    const {} = await supabase.from("Invites").delete().eq("id", props.id);
+  async function declineInvite() {
+        const {} = await supabase
+      .from("Invites")
+      .update({ status: "declined" })
+      .eq("id", props.id);
     props.setRerender(!props.rerender);
   }
 
