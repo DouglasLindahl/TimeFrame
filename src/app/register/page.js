@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { supabase } from "../../../supabase";
 import { useRouter } from "next/navigation";
-import HomeHeader from "@/components/header/page";
+import Header from "@/components/header/page";
 
 export default function Register() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function Register() {
 
   return (
     <>
-    <HomeHeader header={"start"}></HomeHeader>
+    <Header header={"start"}></Header>
       <section className="">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

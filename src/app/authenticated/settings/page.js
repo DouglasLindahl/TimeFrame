@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Header from "@/components/header/page";
 import Navbar from "@/components/navbar/page";
 import Invites from "@/components/invites/page";
+import RegisterProfile from "@/components/registerProfile/page";
 
 const SettingsPage = styled.section`
   height: 100vh;
@@ -30,6 +31,7 @@ export default function Settings() {
       <Header header={"home"}></Header>
       <Content>
         <button onClick={handleClick}>Logout</button>
+        <RegisterProfile></RegisterProfile>
         <Invites></Invites>
       </Content>
       <Navbar navbar={"home"}></Navbar>

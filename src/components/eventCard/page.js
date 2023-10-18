@@ -94,7 +94,7 @@ export default function EventCard(props) {
     const day = date.getDate();
     const month = date.toLocaleString("en-US", { month: "short" });
     const isCurrentDate = isToday(date);
-    const dateClassName = isCurrentDate ? "text-xl font-bold bg-primary-dark" : "text-xl";
+    const dateClassName = isCurrentDate;
 
     return (
       <EventContainer
