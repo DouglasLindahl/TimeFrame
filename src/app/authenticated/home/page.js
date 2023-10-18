@@ -10,7 +10,7 @@ import { startOfWeek, getDay, addDays } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import react, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
-import classNames from "classnames";
+
 import { useCallback } from "react";
 import EventCard from "@/components/eventCard/page";
 import { Swipeable, useSwipeable } from "react-swipeable";
@@ -382,7 +382,7 @@ export default function Home() {
     } else if (calendarView) {
       return (
         <>
-          <CalendarSection backgroundcolor={backgroundPrimary}>
+          <CalendarSection {...handlers} backgroundcolor={backgroundPrimary}>
             <HomeHeader header="home" />
             <ButtonContainer>
               <Button onClick={handlePreviousMonth}>
