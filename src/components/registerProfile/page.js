@@ -58,11 +58,12 @@ export default function RegisterProfile() {
         if (data.length > 0) {
           setErrorText("You already have a profile");
         } else {
-          const {} = await supabase.from("UserInfo").insert({
-            user_uuid: user.id,
-            email: user.email,
-            username: formData.username,
-          });
+            const {} = await supabase.from("UserInfo").insert({
+                user_uuid: user.id,
+                email: user.email,
+                username: formData.username,
+            });
+            setErrorText("Your profile has successfully been created");
         }
       }
     } catch (error) {
