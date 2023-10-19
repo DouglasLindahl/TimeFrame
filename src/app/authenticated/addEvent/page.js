@@ -5,6 +5,7 @@ import Navbar from "@/components/navbar/page";
 import { supabase } from "../../../../supabase";
 import styled from "styled-components";
 import { useQuery } from "graphql-hooks";
+import { useRouter } from "next/navigation";
 
 const COLOR_QUERY = `
 query{
@@ -120,6 +121,7 @@ const StyledSelect = styled.select`
 `;
 
 export default function AddEvent() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -147,7 +149,7 @@ export default function AddEvent() {
       color: color,
       user_uuid: user.id,
     });
-
+    router.push("/authenticated/home");
     console.log("Submitted:", { title, description, date, time, color });
   };
 
