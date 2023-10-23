@@ -16,22 +16,38 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 16px;
 `;
 
 const ChangeViewButton = styled.button`
-  background: #800080;
+  background: #6C63FF;
   &:hover {
-    background: #9400d3;
+    background: #A9A6FF;
   }
   color: white;
   font-weight: 600;
   padding: 12px 24px;
-  border-radius: 999px;
-  margin: 0 8px;
+  border-radius: 100px;
   cursor: pointer;
 `;
 
 const AddEventLink = styled(Link)`
+  background: #4CAF50;
+  &:hover {
+    background: #8BC34A;
+  }
+  color: white;
+  font-weight: 600;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+`;
+
+const SwitchToNotesButton = styled(Link)`
   background: #008000;
   &:hover {
     background: #00b300;
@@ -124,7 +140,6 @@ export default function Navbar(props) {
   const router = useRouter();
   const [isConfirmingRemoval, setConfirmingRemoval] = useState(false);
 
-
   useEffect(() => {
     async function checkProfile() {
       const {
@@ -141,36 +156,6 @@ export default function Navbar(props) {
     checkProfile();
   }, []);
 
-  function sendNotification() {
-    if ("Notification" in window) {
-      // Check if the Notification API is available in the browser
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          // Permission granted, you can send a push notification
-          const options = {
-            body: "This is your push notification message.",
-            icon: "/logo/Logomark_TimeFrame_Vit_T.png",
-            badge: "/logo/Logomark_TimeFrame_Vit_T.png",
-          };
-  
-          // Use the Service Worker to show the notification
-          navigator.serviceWorker.ready.then((registration) => {
-            registration.showNotification("Push Notification Title", options);
-          });
-        } else if (permission === "denied") {
-          // Permission denied by the user
-          console.log("Notification permission denied.");
-        } else if (permission === "default") {
-          // The user closed the permission dialog without granting or denying
-          console.log("Notification permission dialog closed without a decision.");
-        }
-      });
-    } else {
-      console.log("Notification API is not available in this browser.");
-    }
-  }
-  
-
   const removeEvent = async () => {
     const { error } = await supabase.from("Events").delete().eq("id", props.id);
     router.push(`/authenticated/home`);
@@ -185,17 +170,16 @@ export default function Navbar(props) {
   };
 
   async function updateView() {
-    if(userProfile)
-    {
+    if (userProfile) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       const { error } = await supabase
-        .from('UserInfo')
+        .from("UserInfo")
         .update({ prefers_calendar: !props.view })
-        .eq('user_uuid', user.id)
-      }
-      props.setView(!props.view);
+        .eq("user_uuid", user.id);
+    }
+    props.setView(!props.view);
   }
 
   if (props.navbar === "home") {
@@ -204,7 +188,7 @@ export default function Navbar(props) {
         <Container>
           <ChangeViewButton onClick={updateView}>Change View</ChangeViewButton>
           <AddEventLink href="addEvent">+</AddEventLink>
-          <button onClick={sendNotification}>Send notification</button>
+          <SwitchToNotesButton href="/authenticated/notes">Notes</SwitchToNotesButton>
         </Container>
       </NavbarContainer>
     );
@@ -215,19 +199,32 @@ export default function Navbar(props) {
       <SinglePageContainer>
         {isConfirmingRemoval && (
           <ConfirmRemovalContainer>
-            <ConfirmationText>Are you sure you want to delete this event?</ConfirmationText>
+            <ConfirmationText>
+              Are you sure you want to delete this event?
+            </ConfirmationText>
             <ButtonGroup>
-              <RemoveEventButton onClick={removeEvent}>Remove Event</RemoveEventButton>
-              <KeepEventButton onClick={denyRemoveEvent}>Keep Event</KeepEventButton>
+              <RemoveEventButton onClick={removeEvent}>
+                Remove Event
+              </RemoveEventButton>
+              <KeepEventButton onClick={denyRemoveEvent}>
+                Keep Event
+              </KeepEventButton>
             </ButtonGroup>
           </ConfirmRemovalContainer>
         )}
         <SinglePageInnerContainer>
           <ReturnButton href="/authenticated/home">
-            <img src="/icons/arrowWhite.svg" width="18px" alt="Return" style={{ transform: "rotate(90deg)" }} />
+            <img
+              src="/icons/arrowWhite.svg"
+              width="18px"
+              alt="Return"
+              style={{ transform: "rotate(90deg)" }}
+            />
             <p>Return</p>
           </ReturnButton>
-          <RemoveEventButton onClick={confirmRemoveEvent}>Remove Event</RemoveEventButton>
+          <RemoveEventButton onClick={confirmRemoveEvent}>
+            Remove Event
+          </RemoveEventButton>
         </SinglePageInnerContainer>
       </SinglePageContainer>
     );

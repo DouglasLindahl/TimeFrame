@@ -84,9 +84,10 @@ export default function Header(props) {
 
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || '303030';
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || '303030';
+  const primaryColor = data?.main?.primaryColor?.hex || '303030';
   const textColor = data?.main?.textColor?.hex || '303030';
   const shadow = data?.main?.shadowColor?.hex || '303030';
-
+  
   if(!loading)
   {
   if (props.header == "home") {
@@ -95,11 +96,10 @@ export default function Header(props) {
         <Logo>
           <LogoLink href={"/authenticated/home"}>
             <LogoImage src={data.main.logo.url} alt="TimeFrame logo" />
-            {/* <LogoText>TimeFrame</LogoText> */}
           </LogoLink>
         </Logo>
         <NavLinks>
-          <NavLink backgroundcolor={backgroundSecondary} href="/authenticated/settings">Settings</NavLink>
+          <NavLink backgroundcolor={primaryColor} href="/authenticated/settings">Settings</NavLink>
         </NavLinks>
       </HeaderContainer>
     );
@@ -110,11 +110,10 @@ export default function Header(props) {
         <Logo>
           <LogoLink href={"/authenticated/home"}>
           <LogoImage src={data.main.logo.url} alt="TimeFrame logo" />
-            <LogoText>TimeFrame</LogoText>
           </LogoLink>
         </Logo>
         <NavLinks>
-          <NavLink backgroundcolor={backgroundSecondary} href="/unauthenticated/login">Login</NavLink>
+          <NavLink backgroundcolor={primaryColor} href="/unauthenticated/login">Login</NavLink>
         </NavLinks>
       </HeaderContainer>
     );

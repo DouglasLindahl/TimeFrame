@@ -118,7 +118,7 @@ export default function Login() {
           console.log("Registration error:", error);
           setLoginError("Registration failed");
         } else {
-          router.push("/unauthenticated/login");
+          router.push("/unauthenticated/emailConfirmation");
         }
       } else {
         // Login logic
@@ -149,7 +149,7 @@ export default function Login() {
   return (
     <>
       <LoginPage>
-        <HomeHeader header={"start"}></HomeHeader>
+        <HomeHeader register={register} header={"start"}></HomeHeader>
         <LoginFormSection>
           {!register && <Title>Login Form</Title>}
           {register && <Title>Register Form</Title>}

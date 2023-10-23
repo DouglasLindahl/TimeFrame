@@ -166,6 +166,7 @@ export default function AddEvent() {
               id="title"
               name="title"
               value={title}
+              maxLength={30}
               onChange={(e) => setTitle(e.target.value)}
               textcolor={backgroundPrimary}
               required
@@ -177,6 +178,7 @@ export default function AddEvent() {
               id="description"
               name="description"
               value={description}
+              maxLength={300}
               onChange={(e) => setDescription(e.target.value)}
               textcolor={backgroundPrimary}
               rows="4"
