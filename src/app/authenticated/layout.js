@@ -21,7 +21,7 @@ export default function ProtectedLayout({ children }) {
       const session = supabase.auth.getSession();
       if (session) {
         if ((await session).data.session == null) {
-          router.push("/login");
+          router.push("/unauthenticated/login");
         } else {
           setSession(true);
         }

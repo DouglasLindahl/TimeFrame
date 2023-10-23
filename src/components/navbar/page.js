@@ -141,6 +141,16 @@ export default function Navbar(props) {
     checkProfile();
   }, []);
 
+  function sendNotification(){
+    Notification.requestPermission().then(perm => {
+      if(perm === "granted"){
+        const notification = new Notification("Example notification", {
+          body: "test"
+        })
+      }
+    })
+  }
+
   const removeEvent = async () => {
     const { error } = await supabase.from("Events").delete().eq("id", props.id);
     router.push(`/authenticated/home`);
@@ -174,6 +184,7 @@ export default function Navbar(props) {
         <Container>
           <ChangeViewButton onClick={updateView}>Change View</ChangeViewButton>
           <AddEventLink href="addEvent">+</AddEventLink>
+          <button onClick={sendNotification}>Send notification</button>
         </Container>
       </NavbarContainer>
     );

@@ -206,12 +206,15 @@ export default function Home() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      const { data, error } = await supabase
+      if(user)
+      {
+        const { data, error } = await supabase
         .from("UserInfo")
         .select()
         .eq("user_uuid", user.id);
-      if (data.length > 0) {
-        setUserProfile(data);
+        if (data.length > 0) {
+          setUserProfile(data);
+        }
       }
     }
     checkProfile();
@@ -222,7 +225,7 @@ export default function Home() {
       const session = supabase.auth.getSession();
       if (session) {
         if ((await session).data.session == null) {
-          router.push("/login");
+          router.push("/unauthenticated/login");
         } else {
           setSession(true);
         }

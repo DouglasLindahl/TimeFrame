@@ -114,8 +114,7 @@ export default function Header(props) {
           </LogoLink>
         </Logo>
         <NavLinks>
-          <NavLink backgroundcolor={backgroundSecondary} href="/login">Login</NavLink>
-          <NavLink backgroundcolor={backgroundSecondary} href="/register">Register</NavLink>
+          <NavLink backgroundcolor={backgroundSecondary} href="/unauthenticated/login">Login</NavLink>
         </NavLinks>
       </HeaderContainer>
     );

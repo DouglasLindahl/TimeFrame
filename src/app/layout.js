@@ -12,12 +12,6 @@ const client = new GraphQLClient({
 
 const inter = Inter({ subsets: ["latin"] });
 
-// export const metadata = {
-//   title: "TimeFrame",
-//   description: "",
-//   manifest: "/manifest.json",
-// };
-
 
 export default function RootLayout({ children }) {
   return (
