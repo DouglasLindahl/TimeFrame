@@ -95,7 +95,7 @@ export default function Header(props) {
         <Logo>
           <LogoLink href={"/authenticated/home"}>
             <LogoImage src={data.main.logo.url} alt="TimeFrame logo" />
-            <LogoText>TimeFrame</LogoText>
+            {/* <LogoText>TimeFrame</LogoText> */}
           </LogoLink>
         </Logo>
         <NavLinks>
@@ -109,7 +109,7 @@ export default function Header(props) {
       <HeaderContainer shadowcolor={shadow} backgroundcolor={backgroundPrimary} textcolor={textColor}>
         <Logo>
           <LogoLink href={"/authenticated/home"}>
-            <LogoImage src="/favicon.ico" alt="TimeFrame logo" />
+          <LogoImage src={data.main.logo.url} alt="TimeFrame logo" />
             <LogoText>TimeFrame</LogoText>
           </LogoLink>
         </Logo>
