@@ -86,6 +86,10 @@ const ActionSection = styled.section`
   align-items: center;
   color: ${(props) => props.textcolor};
 `;
+const ErrorText = styled.p`
+  color: ${(props) => props.textcolor};
+`;
+
 const LoginForm = styled.form`
   width: 100%;
   display: flex;
@@ -128,6 +132,7 @@ export default function Login() {
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const primaryColor = data?.main?.primaryColor?.hex || "303030";
+  const secondaryColor = data?.main?.secondaryColor?.hex || "303030";
   const shadowColor = data?.main?.shadowColor?.hex || '303030';
   const textColor = data?.main?.textColor?.hex || "303030";
 
@@ -213,8 +218,8 @@ export default function Login() {
               Register
             </ActionButton>
           </ActionSection>
-          <p>{loginError}</p>
-          <LoginForm backgroundcolor={backgroundSecondary} shadowcolor={shadowColor} onSubmit={handleSubmit}>
+          <ErrorText textcolor={secondaryColor}>{loginError}</ErrorText>
+          <LoginForm textcolor={textColor} backgroundcolor={backgroundSecondary} shadowcolor={shadowColor} onSubmit={handleSubmit}>
             <div>
               <input
                 type="text"

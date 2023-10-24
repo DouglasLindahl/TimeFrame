@@ -88,7 +88,7 @@ export default function Header(props) {
   const textColor = data?.main?.textColor?.hex || '303030';
   const shadow = data?.main?.shadowColor?.hex || '303030';
   
-  if(!loading)
+  if(!loading && data)
   {
   if (props.header == "home") {
     return (
@@ -108,7 +108,7 @@ export default function Header(props) {
     return (
       <HeaderContainer shadowcolor={shadow} backgroundcolor={backgroundPrimary} textcolor={textColor}>
         <Logo>
-          <LogoLink href={"/authenticated/home"}>
+          <LogoLink href={"/unauthenticated/start"}>
           <LogoImage src={data.main.logo.url} alt="TimeFrame logo" />
           </LogoLink>
         </Logo>
