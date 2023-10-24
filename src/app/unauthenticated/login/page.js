@@ -4,18 +4,59 @@ import { supabase } from "../../../../supabase";
 import { useRouter } from "next/navigation";
 import HomeHeader from "@/components/header/page";
 import { styled } from "styled-components";
+import { useQuery } from "graphql-hooks";
+
+const COLOR_QUERY = `
+query{
+  main {
+    logo{
+      url
+    }
+    shadowColor{
+      hex
+    }
+    primaryColor{
+      hex
+    }
+    textColor{
+      hex
+    }
+    secondaryColor{
+      hex
+    }
+    backgroundPrimary{
+      hex
+    }
+    backgroundSecondary{
+      hex
+    }
+    currentDay{
+      hex
+    }
+    currentDayText{
+      hex
+    }
+    offDay{
+      hex
+    }
+    offDayText{
+      hex
+    }
+  }
+}
+`;
 
 const LoginPage = styled.section`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #303030;
+  background-color: ${(props) => props.backgroundcolor};
 `;
 const Title = styled.h1`
   width: 100%;
   text-align: center;
   font-size: 32px;
-  color: white;
+  color: ${(props) => props.textcolor};
 `;
 const LoginFormSection = styled.section`
   width: 80%;
@@ -23,19 +64,27 @@ const LoginFormSection = styled.section`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: #202020;
+  background-color: ${(props) => props.backgroundcolor};
   padding: 32px;
   border-radius: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 `;
+
+const SubmitButton = styled.button`
+  background-color: ${(props) => props.backgroundcolor};
+  padding: 8px;
+  border-radius: 8px;
+  color: ${(props) => props.textcolor};
+  box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
+`;
 const ActionSection = styled.section`
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: ${(props) => props.textcolor};
 `;
 const LoginForm = styled.form`
   width: 100%;
@@ -43,23 +92,16 @@ const LoginForm = styled.form`
   flex-direction: column;
   gap: 24px;
   font-size: 24px;
-  button {
-    background-color: #6c63ff;
-    padding: 8px;
-    border-radius: 8px;
-    color: white;
-    box-shadow: 5px 5px 5px #101010;
-  }
   input {
     border-radius: 8px;
     background-color: #303030;
-    color: white;
+    color: ${(props) => props.textcolor};
     padding: 16px;
     font-size: 16px;
-    box-shadow: 5px 5px 5px #101010;
+    box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
   }
   input::placeholder {
-    color: white;
+    color: ${(props) => props.textcolor};
   }
   div {
     display: flex;
@@ -77,10 +119,17 @@ export default function Login() {
   const router = useRouter();
   const [register, setRegister] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const { data, error } = useQuery(COLOR_QUERY);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  
+  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
+  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
+  const primaryColor = data?.main?.primaryColor?.hex || "303030";
+  const shadowColor = data?.main?.shadowColor?.hex || '303030';
+  const textColor = data?.main?.textColor?.hex || "303030";
 
   const loginButtonStyle = {
     background: register ? "#303030" : "#6c63ff",
@@ -148,13 +197,13 @@ export default function Login() {
 
   return (
     <>
-      <LoginPage>
+      <LoginPage backgroundcolor={backgroundSecondary}>
         <HomeHeader register={register} header={"start"}></HomeHeader>
-        <LoginFormSection>
-          {!register && <Title>Login Form</Title>}
-          {register && <Title>Register Form</Title>}
-          <ActionSection>
-            <ActionButton onClick={changeToLogin} style={loginButtonStyle}>
+        <LoginFormSection backgroundcolor={backgroundPrimary}>
+          {!register && <Title textcolor={textColor}>Login Form</Title>}
+          {register && <Title textcolor={textColor}>Register Form</Title>}
+          <ActionSection textcolor={textColor}>
+            <ActionButton  onClick={changeToLogin} style={loginButtonStyle}>
               Login
             </ActionButton>
             <ActionButton
@@ -165,7 +214,7 @@ export default function Login() {
             </ActionButton>
           </ActionSection>
           <p>{loginError}</p>
-          <LoginForm onSubmit={handleSubmit}>
+          <LoginForm shadowcolor={shadowColor} onSubmit={handleSubmit}>
             <div>
               <input
                 type="text"
@@ -189,10 +238,10 @@ export default function Login() {
               />
             </div>
             {!register && (
-              <button type="submit">Login</button>
+              <SubmitButton shadowcolor={shadowColor} backgroundcolor={primaryColor} textcolor={textColor} type="submit">Login</SubmitButton>
             )}
             {register && (
-              <button type="submit">Register</button>
+              <SubmitButton shadowcolor={shadowColor} backgroundcolor={primaryColor} textcolor={textColor} type="submit">Register</SubmitButton>
             )}
           </LoginForm>
         </LoginFormSection>
