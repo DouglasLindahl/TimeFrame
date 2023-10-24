@@ -94,7 +94,7 @@ const LoginForm = styled.form`
   font-size: 24px;
   input {
     border-radius: 8px;
-    background-color: #303030;
+    background-color: ${(props) => props.backgroundcolor};
     color: ${(props) => props.textcolor};
     padding: 16px;
     font-size: 16px;
@@ -214,7 +214,7 @@ export default function Login() {
             </ActionButton>
           </ActionSection>
           <p>{loginError}</p>
-          <LoginForm shadowcolor={shadowColor} onSubmit={handleSubmit}>
+          <LoginForm backgroundcolor={backgroundSecondary} shadowcolor={shadowColor} onSubmit={handleSubmit}>
             <div>
               <input
                 type="text"
