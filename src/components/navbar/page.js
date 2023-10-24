@@ -20,9 +20,9 @@ const Container = styled.div`
 `;
 
 const ChangeViewButton = styled.button`
-  background: #6C63FF;
+  background: #6c63ff;
   &:hover {
-    background: #A9A6FF;
+    background: #a9a6ff;
   }
   color: white;
   font-weight: 600;
@@ -32,9 +32,9 @@ const ChangeViewButton = styled.button`
 `;
 
 const AddEventLink = styled(Link)`
-  background: #4CAF50;
+  background: #4caf50;
   &:hover {
-    background: #8BC34A;
+    background: #8bc34a;
   }
   color: white;
   font-weight: 600;
@@ -157,6 +157,8 @@ export default function Navbar(props) {
   }, []);
 
   const removeEvent = async () => {
+    
+    const {} = await supabase.from("Invites").delete().eq("event_id", props.id);
     const { error } = await supabase.from("Events").delete().eq("id", props.id);
     router.push(`/authenticated/home`);
   };
@@ -188,7 +190,9 @@ export default function Navbar(props) {
         <Container>
           <ChangeViewButton onClick={updateView}>Change View</ChangeViewButton>
           <AddEventLink href="addEvent">+</AddEventLink>
-          <SwitchToNotesButton href="/authenticated/notes">Notes</SwitchToNotesButton>
+          <SwitchToNotesButton href="/authenticated/notes">
+            Notes
+          </SwitchToNotesButton>
         </Container>
       </NavbarContainer>
     );

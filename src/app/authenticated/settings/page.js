@@ -24,7 +24,7 @@ export default function Settings() {
   const router = useRouter();
   async function handleClick() {
     const { error } = await supabase.auth.signOut();
-    router.push("/authenticated/login");
+    router.push("/unauthenticated/login");
   }
   return (
     <SettingsPage>
