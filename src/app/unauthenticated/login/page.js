@@ -114,7 +114,7 @@ const LoginForm = styled.form`
 `;
 
 const ActionButton = styled.button`
-  box-shadow: 5px 5px 5px #101010;
+  box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
   padding: 8px 16px 8px 16px;
   width: 100%;
 `;
@@ -128,21 +128,21 @@ export default function Login() {
     email: "",
     password: "",
   });
-  
+
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const primaryColor = data?.main?.primaryColor?.hex || "303030";
   const secondaryColor = data?.main?.secondaryColor?.hex || "303030";
-  const shadowColor = data?.main?.shadowColor?.hex || '303030';
+  const shadowColor = data?.main?.shadowColor?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
 
   const loginButtonStyle = {
-    background: register ? "#303030" : "#6c63ff",
+    background: register ? "#303030" : `${primaryColor}`,
     borderRadius: "8px 0 0 8px",
   };
 
   const registerButtonStyle = {
-    background: register ? "#6c63ff" : "#303030",
+    background: register ? `${primaryColor}` : "#303030",
     borderRadius: "0 8px 8px 0",
   };
 
@@ -208,10 +208,15 @@ export default function Login() {
           {!register && <Title textcolor={textColor}>Login Form</Title>}
           {register && <Title textcolor={textColor}>Register Form</Title>}
           <ActionSection textcolor={textColor}>
-            <ActionButton  onClick={changeToLogin} style={loginButtonStyle}>
+            <ActionButton
+              shadowcolor={shadowColor}
+              onClick={changeToLogin}
+              style={loginButtonStyle}
+            >
               Login
             </ActionButton>
             <ActionButton
+              shadowcolor={shadowColor}
               onClick={changeToRegister}
               style={registerButtonStyle}
             >
@@ -219,7 +224,12 @@ export default function Login() {
             </ActionButton>
           </ActionSection>
           <ErrorText textcolor={secondaryColor}>{loginError}</ErrorText>
-          <LoginForm textcolor={textColor} backgroundcolor={backgroundSecondary} shadowcolor={shadowColor} onSubmit={handleSubmit}>
+          <LoginForm
+            textcolor={textColor}
+            backgroundcolor={backgroundSecondary}
+            shadowcolor={shadowColor}
+            onSubmit={handleSubmit}
+          >
             <div>
               <input
                 type="text"
@@ -243,10 +253,24 @@ export default function Login() {
               />
             </div>
             {!register && (
-              <SubmitButton shadowcolor={shadowColor} backgroundcolor={primaryColor} textcolor={textColor} type="submit">Login</SubmitButton>
+              <SubmitButton
+                shadowcolor={shadowColor}
+                backgroundcolor={primaryColor}
+                textcolor={textColor}
+                type="submit"
+              >
+                Login
+              </SubmitButton>
             )}
             {register && (
-              <SubmitButton shadowcolor={shadowColor} backgroundcolor={primaryColor} textcolor={textColor} type="submit">Register</SubmitButton>
+              <SubmitButton
+                shadowcolor={shadowColor}
+                backgroundcolor={primaryColor}
+                textcolor={textColor}
+                type="submit"
+              >
+                Register
+              </SubmitButton>
             )}
           </LoginForm>
         </LoginFormSection>

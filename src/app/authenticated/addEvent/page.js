@@ -62,7 +62,7 @@ const FormContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 1.25rem;
+  font-size: 32px;
   font-weight: 600;
   margin-bottom: 1rem;
 `;
@@ -73,22 +73,40 @@ const Form = styled.form`
     font-size: 0.875rem;
     font-weight: 600;
   }
+  ::placeholder {
+    color: ${(props) => props.textcolor};
+  }
 
-  input,
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
   textarea,
   select {
     margin-top: 0.25rem;
     padding: 0.5rem;
     width: 100%;
     border: 1px solid #ccc;
-    border-radius: 0.25rem;
+    border-radius: 8px;
     outline: none;
     transition: border 0.2s;
     color: ${(props) => props.textcolor};
+    border: none;
+    box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
 
     &:focus {
       border: 1px solid #63b3ed;
     }
+  }
+  input[type="color"]
+  {
+    margin-top: 0.25rem;
+    width: 100%;
+    border-radius: 8px;
+    outline: none;
+    color: ${(props) => props.textcolor};
+    border: none;
+    box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
+    background-color: transparent;
   }
 
   textarea {
@@ -97,23 +115,25 @@ const Form = styled.form`
 `;
 
 const Button = styled.button`
-    width: 100%;
-    background-color: ${(props) => props.primary};
-    color: white;
-    padding: 0.5rem 0;
-    border-radius: 0.25rem;
-    margin-top: 1rem;
-    cursor: pointer;
+  width: 100%;
+  background-color: ${(props) => props.primary};
+  color: ${(props) => props.textcolor};
+  padding: 0.5rem 0;
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+  cursor: pointer;
 `;
 
 const StyledInput = styled.input`
   height: 2.5rem;
   color: ${(props) => props.textcolor};
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const StyledTextArea = styled.textarea`
   min-height: 3rem;
   color: ${(props) => props.textcolor};
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const StyledSelect = styled.select`
@@ -132,8 +152,9 @@ export default function AddEvent() {
 
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
-  const primaryColor= data?.main?.primaryColor?.hex || "303030";
+  const primaryColor = data?.main?.primaryColor?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
+  const shadowColor = data?.main?.shadowColor?.hex || "303030";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,10 +179,16 @@ export default function AddEvent() {
       <HomeHeader header={"home"}></HomeHeader>
       <FormContainer>
         <Title>Create Event</Title>
-        <Form backgroundcolor={backgroundPrimary} onSubmit={handleSubmit}>
+        <Form
+          textcolor={textColor}
+          shadowcolor={shadowColor}
+          backgroundcolor={backgroundPrimary}
+          onSubmit={handleSubmit}
+        >
           <div className="mb-4">
-            <label htmlFor="title">Title</label>
             <StyledInput
+              backgroundcolor={backgroundSecondary}
+              placeholder="Title"
               type="text"
               id="title"
               name="title"
@@ -173,8 +200,9 @@ export default function AddEvent() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="description">Description</label>
             <StyledTextArea
+              backgroundcolor={backgroundSecondary}
+              placeholder="Description"
               id="description"
               name="description"
               value={description}
@@ -185,11 +213,11 @@ export default function AddEvent() {
             ></StyledTextArea>
           </div>
           <div className="mb-4">
-            <label htmlFor="date">Date</label>
             <StyledInput
               type="date"
               id="date"
               name="date"
+              backgroundcolor={backgroundSecondary}
               value={date}
               onChange={(e) => setDate(e.target.value)}
               textcolor={backgroundPrimary}
@@ -197,9 +225,9 @@ export default function AddEvent() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="time">Time</label>
             <StyledInput
               type="time"
+              backgroundcolor={backgroundSecondary}
               id="time"
               name="time"
               value={time}
@@ -209,9 +237,9 @@ export default function AddEvent() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="color">Color</label>
             <StyledInput
               type="color"
+              backgroundcolor={backgroundSecondary}
               id="color"
               name="color"
               value={color}
@@ -220,7 +248,14 @@ export default function AddEvent() {
               required
             />
           </div>
-          <Button backgroundcolor={backgroundSecondary} primary={primaryColor} type="submit">Submit</Button>
+          <Button
+            textcolor={textColor}
+            backgroundcolor={backgroundSecondary}
+            primary={primaryColor}
+            type="submit"
+          >
+            Submit
+          </Button>
         </Form>
       </FormContainer>
       <Navbar navbar="home"></Navbar>

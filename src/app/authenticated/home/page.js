@@ -200,18 +200,16 @@ export default function Home() {
   styleSheet.innerText = dynamicStyles;
   document.head.appendChild(styleSheet);
 
-
   useEffect(() => {
     async function checkProfile() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if(user)
-      {
+      if (user) {
         const { data, error } = await supabase
-        .from("UserInfo")
-        .select()
-        .eq("user_uuid", user.id);
+          .from("UserInfo")
+          .select()
+          .eq("user_uuid", user.id);
         if (data.length > 0) {
           setUserProfile(data);
         }
@@ -241,8 +239,7 @@ export default function Home() {
 
   useEffect(() => {
     if (session) {
-      if(userProfile)
-      {
+      if (userProfile) {
         const fetchUserInfo = async () => {
           const {
             data: { user },
@@ -251,17 +248,15 @@ export default function Home() {
             .from("UserInfo")
             .select()
             .eq("user_uuid", user.id);
-  
+
           setUserInfo(data);
           setView(data[0].prefers_calendar);
         };
         fetchUserInfo();
-      }
-      else
-      {
+      } else {
         setView(false);
       }
-      }
+    }
   }, [session, userProfile]);
 
   useEffect(() => {
@@ -410,23 +405,37 @@ export default function Home() {
             <HomeHeader header="home" />
             <ButtonContainer>
               <Button onClick={handlePreviousMonth}>
-                <img
-                  src="/icons/arrowWhite.svg"
-                  width="20px"
-                  alt="Next Month"
-                  style={{ transform: "rotate(90deg)" }}
-                />
+              <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 10"
+                  transform="rotate(90)"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
+                    fill={textColor}
+                  />
+                </svg>
               </Button>
               <DateContainer>
                 <DateText textcolor={textColor}>{formattedDate}</DateText>
               </DateContainer>
               <Button onClick={handleNextMonth}>
-                <img
-                  src="/icons/arrowWhite.svg"
-                  width="20px"
-                  alt="Next Month"
-                  style={{ transform: "rotate(270deg)" }}
-                />
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 10"
+                  transform="rotate(270)"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
+                    fill={textColor}
+                  />
+                </svg>
               </Button>
             </ButtonContainer>
             <CalendarContainer>
