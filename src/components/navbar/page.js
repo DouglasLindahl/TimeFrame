@@ -82,33 +82,39 @@ const ConfirmationText = styled.h2`
 
 const ButtonGroup = styled.div`
   display: flex;
+  justify-content: space-around;
   gap: 16px;
 `;
 
 const RemoveEventButton = styled.button`
-  background: #008000;
-  &:hover {
-    background: #00b300;
-  }
+  font-size: 18px;
+  font-weight: normal;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background-color: red;
   color: white;
+  cursor: pointer;
+`;
+
+const ToggleInvitePageButton = styled.button`
+  font-size: 18px;
+  font-weight: normal;
   width: 100%;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background-color: white;
+  color: black;
   cursor: pointer;
 `;
 
 const KeepEventButton = styled.button`
-  background: white;
-  color: #222;
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
+  font-size: 18px;
+  font-weight: normal;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background-color: white;
+  color: black;
   cursor: pointer;
-  &:hover {
-    background: #222;
-    color: white;
-    outline: 2px solid white;
-  }
 `;
 
 const SinglePageContainer = styled.div`
@@ -121,6 +127,7 @@ const SinglePageInnerContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 `;
 
 const ReturnButton = styled(Link)`
@@ -171,6 +178,10 @@ export default function Navbar(props) {
     setConfirmingRemoval(false);
   };
 
+  const toggleInvitePage = () => {
+    props.setInviteOpen(!props.inviteOpen);
+  }
+
   async function updateView() {
     if (userProfile) {
       const {
@@ -208,7 +219,7 @@ export default function Navbar(props) {
             </ConfirmationText>
             <ButtonGroup>
               <RemoveEventButton onClick={removeEvent}>
-                Remove Event
+                Delete
               </RemoveEventButton>
               <KeepEventButton onClick={denyRemoveEvent}>
                 Keep Event
@@ -226,8 +237,9 @@ export default function Navbar(props) {
             />
             <p>Return</p>
           </ReturnButton>
+          <ToggleInvitePageButton onClick={toggleInvitePage}>Invite</ToggleInvitePageButton>
           <RemoveEventButton onClick={confirmRemoveEvent}>
-            Remove Event
+            Delete
           </RemoveEventButton>
         </SinglePageInnerContainer>
       </SinglePageContainer>

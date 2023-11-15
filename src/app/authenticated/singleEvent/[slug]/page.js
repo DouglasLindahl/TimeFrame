@@ -148,6 +148,12 @@ const StyledTextArea = styled.textarea`
 
 const InviteForm = styled.form`
   color: white;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background-color: orange;
+  padding: 16px;
+  transform: translate(-50%, -50%);
   input,
   textarea {
     margin-top: 0.25rem;
@@ -176,6 +182,7 @@ const Slug = (id) => {
   const [color, setColor] = useState("");
   const [invitedUser, setInvitedUser] = useState("");
   const [loading, setLoading] = useState(true);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const { data, error } = useQuery(COLOR_QUERY);
 
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
@@ -287,12 +294,11 @@ const Slug = (id) => {
   }, [event]);
   useEffect(() => {
     async function fetchInvitedUsers() {
-      if(event)
-      {
+      if (event) {
         const { data, error } = await supabase
-        .from("Invites")
-        .select()
-        .eq("event_id", event.id);
+          .from("Invites")
+          .select()
+          .eq("event_id", event.id);
         setInvitedUsers(data);
       }
     }
@@ -305,8 +311,6 @@ const Slug = (id) => {
     const month = date.toLocaleString("en-US", { month: "short" });
     return { day, month };
   };
-
-
 
   let invitedUsersComponent = null;
   if (Array.isArray(invitedUsers)) {
@@ -397,26 +401,28 @@ const Slug = (id) => {
                     required
                   />
                 </div>
-                <button type="submit">Submit</button>
+                <button type="submit">Update</button>
               </Form>
             </FormContainer>
             {userProfile && (
               <section>
-                <InviteForm onSubmit={handleInvite}>
-                  <div>
-                    <label htmlFor="inviteUser">Invite</label>
-                    <StyledInput
-                      type="text"
-                      id="inviteUser"
-                      name="inviteUser"
-                      onChange={(e) => setInvitedUser(e.target.value)}
-                    />
-                  </div>
-                  <button type="submit">Submit</button>
-                </InviteForm>
-                <section className="text-white">
-                  {invitedUsersComponent}
-                </section>
+                {inviteOpen && (
+                  <InviteForm onSubmit={handleInvite}>
+                    <div>
+                      <label htmlFor="inviteUser">Invite</label>
+                      <StyledInput
+                        type="text"
+                        id="inviteUser"
+                        name="inviteUser"
+                        onChange={(e) => setInvitedUser(e.target.value)}
+                      />
+                    </div>
+                    <button type="submit">Submit</button>
+                    <section className="text-white">
+                      {invitedUsersComponent}
+                    </section>
+                  </InviteForm>
+                )}
               </section>
             )}
             {!userProfile && (
@@ -430,7 +436,12 @@ const Slug = (id) => {
               </>
             )}
           </Content>
-          <Navbar navbar="singlePage" id={event.id}></Navbar>
+          <Navbar
+            navbar="singlePage"
+            setInviteOpen={setInviteOpen}
+            inviteOpen={inviteOpen}
+            id={event.id}
+          ></Navbar>
         </PageContainer>
       );
     }

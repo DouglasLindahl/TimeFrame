@@ -100,6 +100,7 @@ export default function Header(props) {
         </Logo>
         <NavLinks>
           <NavLink backgroundcolor={primaryColor} href="/authenticated/settings">Settings</NavLink>
+          <NavLink backgroundcolor={primaryColor} href="/authenticated/groups">Groups</NavLink>
         </NavLinks>
       </HeaderContainer>
     );

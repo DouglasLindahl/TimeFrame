@@ -164,7 +164,7 @@ export default function Home() {
   const currentDay = data?.main?.currentDay?.hex || "303030";
   const currentDayText = data?.main?.currentDayText?.hex || "303030";
 
-  // Dynamically generate CSS for your calendar styles
+
   const dynamicStyles = `
     .rbc-today {
       background-color: ${currentDay} !important;
