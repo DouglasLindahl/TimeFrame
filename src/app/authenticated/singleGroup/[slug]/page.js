@@ -103,6 +103,20 @@ const Button = styled.button`
   margin: 0 1rem;
 `;
 
+const GroupUsersWindow = styled.div`
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: ${({ isopen }) => (isopen ? "flex" : "none")};
+  flex-direction: column;
+  color: white;
+  background-color: orange;
+  padding: 16px;
+  border-radius: 16px;
+`;
+
 const DateContainer = styled.div`
   width: 180px;
   text-align: center;
@@ -120,6 +134,7 @@ const CalendarContainer = styled.div`
 `;
 
 export default function singleGrouo(id) {
+  const router = useRouter();
   const [groupId, setGroupId] = useState("");
   const [date, setDate] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -127,6 +142,8 @@ export default function singleGrouo(id) {
   const [formattedDates, setFormattedDates] = useState("");
   const [invitedUser, setInvitedUser] = useState("");
   const [groupCount, setGroupCount] = useState("");
+  const [isOwner, setIsOwner] = useState("");
+  const [isGroupUsersWindowOpen, setIsGroupUsersWindowOpen] = useState(false);
 
   const { data, loading, error } = useQuery(COLOR_QUERY);
 
@@ -168,10 +185,10 @@ export default function singleGrouo(id) {
     margin: 2px;
   }
 `;
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = dynamicStyles;
-document.head.appendChild(styleSheet);
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = dynamicStyles;
+  document.head.appendChild(styleSheet);
 
   useEffect(() => {
     const setId = async () => {
@@ -180,6 +197,27 @@ document.head.appendChild(styleSheet);
     };
     setId();
   });
+
+  useEffect(() => {
+    const checkOwner = async () => {
+      if (groupId) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        const { data, error } = await supabase
+          .from("Groups")
+          .select()
+          .eq("id", groupId);
+        if (data[0].owner_uuid == user.id) {
+          setIsOwner(true);
+        } else {
+          setIsOwner(false);
+        }
+      }
+    };
+    checkOwner();
+  }, [groupId]);
 
   const eventStyle = (event, start, end, isSelected) => {
     const style = {
@@ -196,13 +234,13 @@ document.head.appendChild(styleSheet);
   useEffect(() => {
     const getGroupCount = async () => {
       const { data, error } = await supabase
-      .from("GroupUsers")
-      .select()
-      .eq("group_id", groupId)
+        .from("GroupUsers")
+        .select()
+        .eq("group_id", groupId);
       setGroupCount(data);
     };
     getGroupCount();
-  },[groupId]);
+  }, [groupId]);
 
   useEffect(() => {
     if (groupId) {
@@ -231,6 +269,10 @@ document.head.appendChild(styleSheet);
       getDates();
     }
   }, [groupId]);
+
+  const showGroupUsers = async () => {
+    setIsGroupUsersWindowOpen(!isGroupUsersWindowOpen);
+  };
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -277,7 +319,6 @@ document.head.appendChild(styleSheet);
     reformatDates();
   }, [dates]);
 
-
   const handlers = useSwipeable({
     onSwipedLeft: () => handleNextMonth(),
     onSwipedRight: () => handlePreviousMonth(),
@@ -306,6 +347,50 @@ document.head.appendChild(styleSheet);
     // Do nothing when a date is clicked
   };
 
+  const leaveGroup = async () => {
+    //check user id
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    
+    //check group id (groupId)
+
+    //if not owner
+    if (!isOwner) {
+      //from GroupUsers delete where user_uuid = id
+      const {} = await supabase
+        .from("GroupUsers")
+        .delete()
+        .eq("user_uuid", user.id);
+      //from GroupDates delete where user_uuid = id
+
+      const {} = await supabase
+        .from("GroupDates")
+        .delete()
+        .eq("user_uuid", user.id);
+    }
+    //if owner
+    else if(isOwner)
+    {
+      //from GroupUsers delete where group_id = group id
+      const {} = await supabase
+      .from("GroupUsers")
+      .delete()
+      .eq("group_id", groupId);
+      //from GroupDates delete where group_id = group id
+      const {} = await supabase
+      .from("GroupDates")
+      .delete()
+      .eq("group_id", groupId);
+      //from Groups delete where id = group id
+      const {} = await supabase
+      .from("Groups")
+      .delete()
+      .eq("id", groupId);
+    }
+    router.push(`/authenticated/groups`);
+  };
+
   const addDate = async (e) => {
     e.preventDefault();
     const {
@@ -322,55 +407,66 @@ document.head.appendChild(styleSheet);
       <PageContainer backgroundcolor={backgroundPrimary}>
         <Header header="home"></Header>
         <InfoContainer>
+          <GroupUsersWindow isopen={isGroupUsersWindowOpen}>
+            <div>
+              <p>Douglas</p>
+            </div>
+            <div>
+              <p>Noel</p>
+            </div>
+            <div>
+              <p>TimeFrame</p>
+            </div>
+            <form>
+              <p>Invite:</p>
+              <input
+                type="text"
+                id="inviteUser"
+                name="inviteUser"
+                onChange={(e) => setInvitedUser(e.target.value)}
+              />
+              <button onClick={handleInvite}>Submit</button>
+            </form>
+          </GroupUsersWindow>
           <form>
             <input type="date" onChange={(e) => setDate(e.target.value)} />
             <button onClick={addDate}>Submit</button>
           </form>
-          <form>
-            <p>Invite:</p>
-            <input
-              type="text"
-              id="inviteUser"
-              name="inviteUser"
-              onChange={(e) => setInvitedUser(e.target.value)}
-            />
-            <button onClick={handleInvite}>Submit</button>
-          </form>
           <ButtonContainer>
-              <Button onClick={handlePreviousMonth}>
+            <Button onClick={handlePreviousMonth}>
               <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 16 10"
-                  transform="rotate(90)"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
-                    fill={textColor}
-                  />
-                </svg>
-              </Button>
-              <DateContainer>
-                <DateText textcolor={textColor}>{formattedDate}</DateText>
-              </DateContainer>
-              <Button onClick={handleNextMonth}>
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 16 10"
-                  transform="rotate(270)"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
-                    fill={textColor}
-                  />
-                </svg>
-              </Button>
-            </ButtonContainer>
+                width="20"
+                height="20"
+                viewBox="0 0 16 10"
+                transform="rotate(90)"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
+                  fill={textColor}
+                />
+              </svg>
+            </Button>
+            <DateContainer>
+              <DateText textcolor={textColor}>{formattedDate}</DateText>
+            </DateContainer>
+            <Button onClick={handleNextMonth}>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 16 10"
+                transform="rotate(270)"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
+                  fill={textColor}
+                />
+              </svg>
+            </Button>
+          </ButtonContainer>
           <CalendarContainer {...handlers}>
             <Calendar
               localizer={localizer}
@@ -385,7 +481,14 @@ document.head.appendChild(styleSheet);
             />
           </CalendarContainer>
         </InfoContainer>
-        <Navbar navbar="home"></Navbar>
+        <Navbar
+          navbar="singleGroup"
+          isOwner={isOwner}
+          showGroupUsers={showGroupUsers}
+          isUsersPageOpen={isGroupUsersWindowOpen}
+          setUsersPageOpen={setIsGroupUsersWindowOpen}
+          leaveGroup={leaveGroup}
+        ></Navbar>
       </PageContainer>
     );
   } else {

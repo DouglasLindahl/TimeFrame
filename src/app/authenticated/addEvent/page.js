@@ -176,7 +176,7 @@ export default function AddEvent() {
 
   return (
     <Container textcolor={textColor} backgroundcolor={backgroundPrimary}>
-      <HomeHeader header={"home"}></HomeHeader>
+      <HomeHeader header={"singlePage"}></HomeHeader>
       <FormContainer>
         <Title>Create Event</Title>
         <Form

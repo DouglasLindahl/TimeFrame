@@ -392,7 +392,7 @@ export default function Home() {
       return (
         <>
           <CardsContainer backgroundcolor={backgroundPrimary}>
-            <HomeHeader header="home" />
+            <HomeHeader view={calendarView} setView={setView} header="home" />
             <CardsContent>{cardsComponent}</CardsContent>
             <Navbar navbar="home" view={calendarView} setView={setView} />
           </CardsContainer>
@@ -402,7 +402,7 @@ export default function Home() {
       return (
         <>
           <CalendarSection {...handlers} backgroundcolor={backgroundPrimary}>
-            <HomeHeader header="home" />
+            <HomeHeader view={calendarView} setView={setView} header="home" />
             <ButtonContainer>
               <Button onClick={handlePreviousMonth}>
               <svg

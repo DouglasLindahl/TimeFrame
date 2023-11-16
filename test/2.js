@@ -4,35 +4,6 @@ import { supabase } from "../../../supabase";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import { useQuery } from "graphql-hooks";
-
-const COLOR_QUERY = `
-query{
-  main {
-    logo{
-      url
-    }
-    shadowColor{
-      hex
-    }
-    primaryColor{
-      hex
-    }
-    textColor{
-      hex
-    }
-    secondaryColor{
-      hex
-    }
-    backgroundPrimary{
-      hex
-    }
-    backgroundSecondary{
-      hex
-    }
-  }
-}
-`;
 
 const NavbarContainer = styled.div`
   width: 100%;
@@ -48,33 +19,16 @@ const Container = styled.div`
   gap: 16px;
 `;
 
-const NavLinks = styled.div`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-`;
-
-const NavLink = styled(Link)`
-  font-size: 18px;
-  font-weight: normal;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background-color: ${(props) => props.backgroundcolor};
-`;
-
-const NavImage = styled(Link)`
-  width: 40px;
-  height: 40px;
-`;
-
-const NavButton = styled.button`
-  width: 40px;
-  height: 40px;
-`;
-
 const ChangeViewButton = styled.button`
-  width: 40px;
-  height: 40px;
+  background: #6c63ff;
+  &:hover {
+    background: #a9a6ff;
+  }
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 100px;
+  cursor: pointer;
 `;
 
 const AddEventLink = styled(Link)`
@@ -194,14 +148,6 @@ export default function Navbar(props) {
   const router = useRouter();
   const [isConfirmingRemoval, setConfirmingRemoval] = useState(false);
 
-  const { data, loading, error } = useQuery(COLOR_QUERY);
-
-  const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
-  const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
-  const primaryColor = data?.main?.primaryColor?.hex || "303030";
-  const textColor = data?.main?.textColor?.hex || "303030";
-  const shadow = data?.main?.shadowColor?.hex || "303030";
-
   useEffect(() => {
     async function checkProfile() {
       const {
@@ -253,67 +199,11 @@ export default function Navbar(props) {
     return (
       <NavbarContainer>
         <Container>
-          <NavLinks>
-            <NavImage href="/authenticated/home">
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fill="white"
-                  d="M16.612 2.214a1.01 1.01 0 0 0-1.242 0L1 13.419l1.243 1.572L4 13.621V26a2.004 2.004 0 0 0 2 2h20a2.004 2.004 0 0 0 2-2V13.63L29.757 15L31 13.428ZM18 26h-4v-8h4Zm2 0v-8a2.002 2.002 0 0 0-2-2h-4a2.002 2.002 0 0 0-2 2v8H6V12.062l10-7.79l10 7.8V26Z"
-                />
-              </svg>
-            </NavImage>
-            <NavImage href="addEvent">
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path fill="white" d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" />
-              </svg>
-            </NavImage>
-            <NavImage
-              backgroundcolor={primaryColor}
-              href="/authenticated/groups"
-            >
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fill="white"
-                  d="M31 30h-2v-3a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3v3h-2v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zm-7-18a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5zm-9 12h-2v-3a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v3H1v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zM8 4a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5z"
-                />
-              </svg>
-            </NavImage>
-          </NavLinks>
-        </Container>
-      </NavbarContainer>
-    );
-  }
-  if(props.navbar == "groups")
-  {
-    return (
-      <NavbarContainer>
-        <Container>
-          <NavLinks>
-            <NavImage href="/authenticated/home">
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fill="white"
-                  d="M16.612 2.214a1.01 1.01 0 0 0-1.242 0L1 13.419l1.243 1.572L4 13.621V26a2.004 2.004 0 0 0 2 2h20a2.004 2.004 0 0 0 2-2V13.63L29.757 15L31 13.428ZM18 26h-4v-8h4Zm2 0v-8a2.002 2.002 0 0 0-2-2h-4a2.002 2.002 0 0 0-2 2v8H6V12.062l10-7.79l10 7.8V26Z"
-                />
-              </svg>
-            </NavImage>
-            <NavButton onClick={props.toggleCreateGroup}>
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path fill="white" d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" />
-              </svg>
-            </NavButton>
-            <NavImage
-              backgroundcolor={primaryColor}
-              href="/authenticated/groups"
-            >
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fill="white"
-                  d="M31 30h-2v-3a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3v3h-2v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zm-7-18a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5zm-9 12h-2v-3a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v3H1v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zM8 4a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5z"
-                />
-              </svg>
-            </NavImage>
-          </NavLinks>
+          <ChangeViewButton onClick={updateView}>Change View</ChangeViewButton>
+          <AddEventLink href="addEvent">+</AddEventLink>
+          <SwitchToNotesButton href="/authenticated/notes">
+            Notes
+          </SwitchToNotesButton>
         </Container>
       </NavbarContainer>
     );
@@ -367,15 +257,14 @@ export default function Navbar(props) {
           <ToggleInvitePageButton onClick={props.showGroupUsers}>
             Group members
           </ToggleInvitePageButton>
-          {props.isOwner ? (
-            <RemoveEventButton onClick={confirmRemoveEvent}>
-              Delete
-            </RemoveEventButton>
-          ) : (
-            <RemoveEventButton onClick={confirmRemoveEvent}>
-              Leave
-            </RemoveEventButton>
-          )}
+          {props.isOwner ?(
+          <RemoveEventButton onClick={confirmRemoveEvent}>
+            Delete
+          </RemoveEventButton>
+          ) : 
+          <RemoveEventButton onClick={confirmRemoveEvent}>
+          Leave
+        </RemoveEventButton>}
         </SinglePageInnerContainer>
       </SinglePageContainer>
     );

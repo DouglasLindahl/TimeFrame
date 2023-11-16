@@ -63,8 +63,10 @@ export default function Groups() {
     getGroups();
   }, []);
 
+
+
+
   const createGroup = async (e) => {
-    e.preventDefault();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -72,6 +74,7 @@ export default function Groups() {
     const { error } = await supabase
       .from("Groups")
       .insert([{ group_name: groupName, owner_uuid: user.id }]);
+
 
     const { data } = await supabase
       .from("Groups")
@@ -83,7 +86,12 @@ export default function Groups() {
     const {} = await supabase
       .from("GroupUsers")
       .insert({ group_id: data[0].id, user_uuid: user.id });
+      window.location.reload();
   };
+
+
+
+
 
   let cardsComponent = null;
   if (Array.isArray(groups)) {
@@ -95,7 +103,7 @@ export default function Groups() {
   return (
     <>
       <PageContainer>
-        <Header header="home"></Header>
+        <Header header="singlePage"></Header>
         <GroupsContainer>
           <CreateGroupSection>
             <ImageButton onClick={toggleCreateGroup}>
@@ -135,6 +143,7 @@ export default function Groups() {
                   onChange={(e) => setGroupName(e.target.value)}
                 />
               </label>
+            </CreateGroupForm>
               <ImageButton onClick={createGroup}>
                 <svg
                   width="37"
@@ -149,11 +158,10 @@ export default function Groups() {
                   />
                 </svg>
               </ImageButton>
-            </CreateGroupForm>
           </CreateGroupSection>
           {cardsComponent}
         </GroupsContainer>
-        <Navbar navbar="home"></Navbar>
+        <Navbar toggleCreateGroup={toggleCreateGroup} navbar="groups"></Navbar>
       </PageContainer>
     </>
   );
