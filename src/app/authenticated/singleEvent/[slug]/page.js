@@ -30,6 +30,12 @@ query{
     backgroundPrimary{
       hex
     }
+    red{
+      hex
+    }
+    green{
+      hex
+    }
     backgroundSecondary{
       hex
     }
@@ -98,52 +104,85 @@ const FormContainer = styled.div`
 `;
 
 const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   label {
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
+  }
+  ::placeholder {
     color: ${(props) => props.textcolor};
   }
 
-  input,
-  textarea {
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
     margin-top: 0.25rem;
     padding: 0.5rem;
     width: 100%;
     border: 1px solid #ccc;
-    border-radius: 0.25rem;
+    border-radius: 8px;
     outline: none;
     transition: border 0.2s;
+    color: ${(props) => props.textcolor};
+    border: none;
+    box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
 
     &:focus {
       border: 1px solid #63b3ed;
     }
   }
+  input[type="color"] {
+    margin-top: 0.25rem;
+    width: 100%;
+    border-radius: 8px;
+    outline: none;
+    color: ${(props) => props.textcolor};
+    border: none;
+    box-shadow: 5px 5px 5px ${(props) => props.shadowcolor};
+    background-color: transparent;
+  }
 
   textarea {
     resize: vertical;
   }
+`;
 
-  button {
-    width: 100%;
-    background-color: ${(props) => props.backgroundcolor};
-    color: white;
-    padding: 0.5rem 0;
-    border-radius: 0.25rem;
-    margin-top: 1rem;
-    cursor: pointer;
-
-    &:hover {
-    }
-  }
+const Button = styled.button`
+  width: 100%;
+  background-color: ${(props) => props.primary};
+  color: ${(props) => props.textcolor};
+  padding: 0.5rem 0;
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+  cursor: pointer;
 `;
 
 const StyledInput = styled.input`
   height: 2.5rem;
+  color: ${(props) => props.textcolor};
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const StyledTextArea = styled.textarea`
   min-height: 3rem;
+  color: ${(props) => props.textcolor};
+  background-color: ${(props) => props.backgroundcolor};
+`;
+
+const ExitButton = styled.button`
+  background-color: ${(props) => props.backgroundcolor};
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 4px;
+  border-radius: 100%;
 `;
 
 const InviteForm = styled.form`
@@ -151,7 +190,8 @@ const InviteForm = styled.form`
   position: absolute;
   left: 50%;
   top: 50%;
-  background-color: orange;
+  background-color: #202020;
+  border-radius: 8px;
   padding: 16px;
   transform: translate(-50%, -50%);
   input,
@@ -159,11 +199,12 @@ const InviteForm = styled.form`
     margin-top: 0.25rem;
     padding: 0.5rem;
     width: 100%;
-    border: 1px solid #ccc;
     border-radius: 0.25rem;
     outline: none;
     transition: border 0.2s;
-    color: black;
+    box-shadow: 5px 5px 5px #101010;
+    background-color: #303030;
+    color: white;
   }
 `;
 
@@ -188,6 +229,10 @@ const Slug = (id) => {
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
+  const primaryColor = data?.main?.primaryColor?.hex || "303030";
+  const red = data?.main?.red?.hex || "303030";
+  const green = data?.main?.green?.hex || "303030";
+  const shadowColor = data?.main?.shadowColor?.hex || "303030";
 
   useEffect(() => {
     async function checkProfile() {
@@ -305,6 +350,10 @@ const Slug = (id) => {
     fetchInvitedUsers();
   }, [event]);
 
+  const closeInvitePage = () => {
+    setInviteOpen(false);
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -330,7 +379,10 @@ const Slug = (id) => {
   if (authenticated) {
     if (event && event.id) {
       return (
-        <PageContainer backgroundcolor={backgroundPrimary}>
+        <PageContainer
+          textcolor={textColor}
+          backgroundcolor={backgroundPrimary}
+        >
           <HomeHeader header="home" />
           <Content>
             <EventContainer textcolor={textColor}>
@@ -345,12 +397,14 @@ const Slug = (id) => {
             <FormContainer>
               <Form
                 textcolor={textColor}
-                backgroundcolor={backgroundSecondary}
+                shadowcolor={shadowColor}
+                backgroundcolor={backgroundPrimary}
                 onSubmit={handleSubmit}
               >
                 <div>
-                  <label htmlFor="title">Title</label>
                   <StyledInput
+                    backgroundcolor={backgroundSecondary}
+                    placeholder="Title"
                     type="text"
                     id="title"
                     name="title"
@@ -360,8 +414,9 @@ const Slug = (id) => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="description">Description</label>
                   <StyledTextArea
+                    backgroundcolor={backgroundSecondary}
+                    placeholder="Description"
                     id="description"
                     name="description"
                     value={description}
@@ -369,8 +424,9 @@ const Slug = (id) => {
                   ></StyledTextArea>
                 </div>
                 <div>
-                  <label htmlFor="date">Date</label>
                   <StyledInput
+                    backgroundcolor={backgroundSecondary}
+                    placeholder="Date"
                     type="date"
                     id="date"
                     name="date"
@@ -380,9 +436,10 @@ const Slug = (id) => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="time">Time</label>
                   <StyledInput
+                    backgroundcolor={backgroundSecondary}
                     type="time"
+                    placeholder="Time"
                     id="time"
                     name="time"
                     value={time}
@@ -391,8 +448,9 @@ const Slug = (id) => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="color">Color</label>
                   <StyledInput
+                    backgroundcolor={backgroundSecondary}
+                    placeholder="Color"
                     type="color"
                     id="color"
                     name="color"
@@ -401,15 +459,28 @@ const Slug = (id) => {
                     required
                   />
                 </div>
-                <button type="submit">Update</button>
+                <Button             textcolor={textColor}
+            backgroundcolor={backgroundSecondary}
+            primary={primaryColor} type="submit">Update</Button>
               </Form>
             </FormContainer>
             {userProfile && (
               <section>
                 {inviteOpen && (
                   <InviteForm onSubmit={handleInvite}>
+                    <ExitButton backgroundcolor={red} onClick={closeInvitePage}>
+                      <svg
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.271 8.72827L17.4565 1.54272L15.9138 0L8.72827 7.18555L1.54272 0L0 1.54272L7.18555 8.72827L0 15.9138L1.54272 17.4565L8.72827 10.271L15.9138 17.4565L17.4565 15.9138L10.271 8.72827Z"
+                          fill="white"
+                        />
+                      </svg>
+                    </ExitButton>
                     <div>
-                      <label htmlFor="inviteUser">Invite</label>
                       <StyledInput
                         type="text"
                         id="inviteUser"
