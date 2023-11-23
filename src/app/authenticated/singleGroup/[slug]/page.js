@@ -103,6 +103,36 @@ const Button = styled.button`
   margin: 0 1rem;
 `;
 
+const DateInfo = styled.div`
+  z-index: 10;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px;
+  max-height: 200px;
+  width: 200px;
+  border-radius: 8px;
+  background-color: #303030;
+  overflow-y: auto;
+  color: white;
+  box-shadow: 0 2px 4px #101010;
+  p {
+    font-size: 24px;
+  }
+`;
+
+const ExitButton = styled.button`
+  background-color: red;
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 4px;
+  border-radius: 100%;
+`;
+
 const GroupUsersWindow = styled.div`
   position: absolute;
   z-index: 10;
@@ -112,9 +142,31 @@ const GroupUsersWindow = styled.div`
   display: ${({ isopen }) => (isopen ? "flex" : "none")};
   flex-direction: column;
   color: white;
-  background-color: orange;
+  background-color: #202020;
   padding: 16px;
   border-radius: 16px;
+  box-shadow: 0 2px 4px #101010;
+  p {
+    margin-left: 8px;
+    padding-bottom: 4px;
+  }
+  form {
+    input {
+      background-color: #303030;
+      padding: 4px 8px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px #101010;
+    }
+    ::placeholder {
+      color: white;
+    }
+    button {
+      padding: 4px 8px;
+      border-radius: 16px;
+      background-color: #6c63ff;
+      margin-left: 8px;
+    }
+  }
 `;
 
 const DateContainer = styled.div`
@@ -143,6 +195,9 @@ export default function singleGrouo(id) {
   const [invitedUser, setInvitedUser] = useState("");
   const [groupCount, setGroupCount] = useState("");
   const [isOwner, setIsOwner] = useState("");
+  const [dateInfoOpen, setDateInfoOpen] = useState("");
+  const [usernamesWithIds, setUsernamesWithIds] = useState([]);
+  const [groupUsers, setGroupUsers] = useState([]);
   const [isGroupUsersWindowOpen, setIsGroupUsersWindowOpen] = useState(false);
 
   const { data, loading, error } = useQuery(COLOR_QUERY);
@@ -198,6 +253,13 @@ export default function singleGrouo(id) {
     setId();
   });
 
+  const closeDateInfo = () => {
+    setDateInfoOpen(false);
+  };
+  const closeGroupUsersWindow = () => {
+    setIsGroupUsersWindowOpen(false);
+  }
+
   useEffect(() => {
     const checkOwner = async () => {
       if (groupId) {
@@ -232,14 +294,16 @@ export default function singleGrouo(id) {
   };
 
   useEffect(() => {
-    const getGroupCount = async () => {
-      const { data, error } = await supabase
-        .from("GroupUsers")
-        .select()
-        .eq("group_id", groupId);
-      setGroupCount(data);
-    };
-    getGroupCount();
+    if (groupId) {
+      const getGroupCount = async () => {
+        const { data, error } = await supabase
+          .from("GroupUsers")
+          .select()
+          .eq("group_id", groupId);
+        setGroupCount(data);
+      };
+      getGroupCount();
+    }
   }, [groupId]);
 
   useEffect(() => {
@@ -272,7 +336,43 @@ export default function singleGrouo(id) {
 
   const showGroupUsers = async () => {
     setIsGroupUsersWindowOpen(!isGroupUsersWindowOpen);
+    setDateInfoOpen(false);
+  
+    try {
+      // Fetch users belonging to the group
+      const { data: groupUsers, error: groupUsersError } = await supabase
+        .from("GroupUsers")
+        .select("user_uuid")
+        .eq("group_id", groupId);
+  
+      if (groupUsersError) {
+        throw groupUsersError;
+      }
+  
+      const userUUIDs = groupUsers.map((user) => user.user_uuid);
+  
+      // Fetch user information from UserInfo using user_uuids
+      const { data: usersInfo, error: usersInfoError } = await supabase
+        .from("UserInfo")
+        .select()
+        .in("user_uuid", userUUIDs);
+  
+      if (usersInfoError) {
+        throw usersInfoError;
+      }
+  
+      // Display usernames of the fetched users
+      const usernames = usersInfo.map((user) => user.username);
+      console.log(usernames); // Check if you're getting the usernames correctly
+      setGroupUsers(usernames);
+
+      // You can set the fetched usernames to a state or variable for rendering in the UI
+    } catch (error) {
+      console.error("Error fetching group users:", error);
+      // Handle error state or error display here
+    }
   };
+  
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -338,6 +438,43 @@ export default function singleGrouo(id) {
     setCurrentDate(nextMonthDate);
   };
 
+  const openDateInfo = async (event) => {
+    const eventId = event.id;
+
+    try {
+      const { data: groupDates, error: groupDatesError } = await supabase
+        .from("GroupDates")
+        .select("user_uuid")
+        .eq("date", eventId);
+
+      if (groupDatesError) {
+        throw groupDatesError;
+      }
+
+      const userUUIDs = groupDates.map((date) => date.user_uuid);
+
+      const { data: usersInfo, error: usersInfoError } = await supabase
+        .from("UserInfo")
+        .select()
+        .in("user_uuid", userUUIDs);
+
+      if (usersInfoError) {
+        throw usersInfoError;
+      }
+
+      const usernamesAndIds = usersInfo.map((user) => ({
+        username: user.username,
+        user_uuid: user.user_uuid,
+      }));
+      console.log(usernamesAndIds);
+      setUsernamesWithIds(usernamesAndIds);
+      setDateInfoOpen(true);
+      setIsGroupUsersWindowOpen(false);
+    } catch (error) {
+      console.error("Error fetching user information:", error);
+    }
+  };
+
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -352,7 +489,7 @@ export default function singleGrouo(id) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    
+
     //check group id (groupId)
 
     //if not owner
@@ -370,68 +507,115 @@ export default function singleGrouo(id) {
         .eq("user_uuid", user.id);
     }
     //if owner
-    else if(isOwner)
-    {
+    else if (isOwner) {
       //from GroupUsers delete where group_id = group id
       const {} = await supabase
-      .from("GroupUsers")
-      .delete()
-      .eq("group_id", groupId);
+        .from("GroupUsers")
+        .delete()
+        .eq("group_id", groupId);
       //from GroupDates delete where group_id = group id
       const {} = await supabase
-      .from("GroupDates")
-      .delete()
-      .eq("group_id", groupId);
+        .from("GroupDates")
+        .delete()
+        .eq("group_id", groupId);
       //from Groups delete where id = group id
-      const {} = await supabase
-      .from("Groups")
-      .delete()
-      .eq("id", groupId);
+      const {} = await supabase.from("Groups").delete().eq("id", groupId);
     }
     router.push(`/authenticated/groups`);
   };
 
   const addDate = async (e) => {
-    e.preventDefault();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    const { error } = await supabase
-      .from("GroupDates")
-      .insert({ group_id: groupId, user_uuid: user.id, date: date });
+      // Check if the date already exists for the user and group
+      const { data: existingDate, error: dateError } = await supabase
+        .from("GroupDates")
+        .select()
+        .eq("group_id", groupId)
+        .eq("user_uuid", user.id)
+        .eq("date", date);
+
+      if (existingDate && existingDate.length > 0) {
+        // Date already exists for this user in the group
+        // Handle this case, such as showing an error message
+        console.log("Date already exists for this user in the group");
+      } else {
+        // Date doesn't exist, insert the new date
+        const { error } = await supabase
+          .from("GroupDates")
+          .insert({ group_id: groupId, user_uuid: user.id, date: date });
+
+        if (error) {
+          // Handle insertion error
+          console.error("Error inserting date:", error);
+        } else {
+          // Refresh the page after successful insertion
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error("Error adding date:", error);
+    }
   };
 
   if (groupId) {
     return (
       <PageContainer backgroundcolor={backgroundPrimary}>
         <Header header="home"></Header>
+        {dateInfoOpen && (
+          <DateInfo>
+            <ExitButton onClick={closeDateInfo}>
+              <svg
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.271 8.72827L17.4565 1.54272L15.9138 0L8.72827 7.18555L1.54272 0L0 1.54272L7.18555 8.72827L0 15.9138L1.54272 17.4565L8.72827 10.271L15.9138 17.4565L17.4565 15.9138L10.271 8.72827Z"
+                  fill="white"
+                />
+              </svg>
+            </ExitButton>
+            {usernamesWithIds.map((userInfo, index) => (
+              <p key={index}>{userInfo.username}</p>
+            ))}
+          </DateInfo>
+        )}
         <InfoContainer>
           <GroupUsersWindow isopen={isGroupUsersWindowOpen}>
-            <div>
-              <p>Douglas</p>
-            </div>
-            <div>
-              <p>Noel</p>
-            </div>
-            <div>
-              <p>TimeFrame</p>
-            </div>
+            <ExitButton onClick={closeGroupUsersWindow}>
+              <svg
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.271 8.72827L17.4565 1.54272L15.9138 0L8.72827 7.18555L1.54272 0L0 1.54272L7.18555 8.72827L0 15.9138L1.54272 17.4565L8.72827 10.271L15.9138 17.4565L17.4565 15.9138L10.271 8.72827Z"
+                  fill="white"
+                />
+              </svg>
+            </ExitButton>
+            {groupUsers.map((user, index) => (
+              <p key={index}>{user}</p>
+            ))}
             <form>
-              <p>Invite:</p>
               <input
                 type="text"
                 id="inviteUser"
                 name="inviteUser"
+                placeholder="Username"
                 onChange={(e) => setInvitedUser(e.target.value)}
               />
-              <button onClick={handleInvite}>Submit</button>
+              <button onClick={handleInvite}>Invite</button>
             </form>
           </GroupUsersWindow>
           <form>
             <input type="date" onChange={(e) => setDate(e.target.value)} />
-            <button onClick={addDate}>Submit</button>
           </form>
+          <button onClick={addDate}>Submit</button>
           <ButtonContainer>
             <Button onClick={handlePreviousMonth}>
               <svg
@@ -468,17 +652,20 @@ export default function singleGrouo(id) {
             </Button>
           </ButtonContainer>
           <CalendarContainer {...handlers}>
-            <Calendar
-              localizer={localizer}
-              events={formattedDates}
-              startAccessor="start"
-              endAccessor="end"
-              toolbar={false}
-              eventPropGetter={eventStyle}
-              // onSelectEvent={goToSinglePage}
-              date={currentDate}
-              onNavigate={handleDateClick}
-            />
+            {formattedDates && (
+              <Calendar
+                localizer={localizer}
+                events={formattedDates}
+                startAccessor="start"
+                endAccessor="end"
+                toolbar={false}
+                eventPropGetter={eventStyle}
+                onSelectEvent={openDateInfo}
+                onView={openDateInfo}
+                date={currentDate}
+                onNavigate={handleDateClick}
+              />
+            )}
           </CalendarContainer>
         </InfoContainer>
         <Navbar

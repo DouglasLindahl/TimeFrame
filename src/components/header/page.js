@@ -94,12 +94,18 @@ const NavImage = styled(Link)`
 export default function Header(props) {
   const [userProfile, setUserProfile] = useState("");
   const { data, loading, error } = useQuery(COLOR_QUERY);
+  const [notificationsOpen, setNotificationsOpen] = useState(true);
 
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const primaryColor = data?.main?.primaryColor?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
   const shadow = data?.main?.shadowColor?.hex || "303030";
+
+  
+  const openNotifications = () => {
+    
+  }
 
   useEffect(() => {
     async function checkProfile() {
@@ -161,9 +167,9 @@ export default function Header(props) {
                 </svg>
               )}
             </ChangeViewButton>
-            <NavImage
+            <NavImage onClick={openNotifications}
               backgroundcolor={primaryColor}
-              href="/authenticated/groups"
+              href="/authenticated/notifications"
             >
               <svg
                 viewBox="0 0 32 32"
