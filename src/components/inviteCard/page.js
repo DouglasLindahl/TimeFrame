@@ -154,7 +154,7 @@ export default function InviteCard(props) {
   if (sender && event) {
     return (
       <CardContainer textcolor={textColor} shadowcolor={shadowColor} backgroundcolor={backgroundSecondary}>
-        <Email>{sender[0].email}</Email>
+        <Email>{sender[0].username}</Email>
         <Title>{event[0].title}</Title>
         <Date>{event[0].date}</Date>
         <Time>{event[0].time}</Time>

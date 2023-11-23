@@ -190,7 +190,7 @@ export default function Home() {
     }
     .rbc-day-bg {
       border: none !important;
-      background-color: #303030;
+      background-color: ${backgroundSecondary};
       border-radius: 5px;
       margin: 2px;
     }

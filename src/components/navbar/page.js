@@ -15,6 +15,12 @@ query{
     shadowColor{
       hex
     }
+    red{
+      hex
+    }
+    green{
+      hex
+    }
     primaryColor{
       hex
     }
@@ -38,7 +44,7 @@ const NavbarContainer = styled.div`
   width: 100%;
   color: white;
   padding: 16px 0;
-  background-color: #202020;
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const Container = styled.div`
@@ -115,11 +121,11 @@ const ConfirmRemovalContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #222;
+  background-color: ${(props) => props.backgroundcolor};
   padding: 16px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  color: white;
+  box-shadow: 0px 4px 8px ${(props) => props.shadowcolor};
+  color: ${(props) => props.textcolor};
 `;
 
 const ConfirmationText = styled.h2`
@@ -138,8 +144,8 @@ const RemoveEventButton = styled.button`
   font-weight: normal;
   padding: 8px 16px;
   border-radius: 999px;
-  background-color: red;
-  color: white;
+  background-color: ${(props) => props.backgroundcolor};
+  color: ${(props) => props.textcolor};
   cursor: pointer;
 `;
 
@@ -149,8 +155,8 @@ const ToggleInvitePageButton = styled.button`
   width: 100%;
   padding: 8px 16px;
   border-radius: 999px;
-  background-color: white;
-  color: black;
+  background-color: ${(props) => props.backgroundcolor};
+  color: ${(props) => props.textcolor};
   cursor: pointer;
 `;
 
@@ -159,21 +165,22 @@ const KeepEventButton = styled.button`
   font-weight: normal;
   padding: 8px 16px;
   border-radius: 999px;
-  background-color: white;
-  color: black;
+  background-color: ${(props) => props.backgroundcolor};
+  color: ${(props) => props.textcolor};
   cursor: pointer;
 `;
 
 const SinglePageContainer = styled.div`
   width: 100%;
   padding: 16px;
-  background-color: #202020;
+  background-color: ${(props) => props.backgroundcolor};
 `;
 
 const SinglePageInnerContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: ${(props) => props.textcolor};
   gap: 16px;
 `;
 
@@ -181,8 +188,8 @@ const ReturnButton = styled(Link)`
   display: flex;
   gap: 16px;
   padding: 8px 24px;
-  background: #222;
-  color: white;
+  background-color: ${(props) => props.backgroundcolor};
+  color: ${(props) => props.textcolor};
   border-radius: 999px;
   cursor: pointer;
   text-decoration: none;
@@ -200,7 +207,9 @@ export default function Navbar(props) {
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const primaryColor = data?.main?.primaryColor?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
-  const shadow = data?.main?.shadowColor?.hex || "303030";
+  const shadowColor = data?.main?.shadowColor?.hex || "303030";
+  const red = data?.main?.red?.hex || "303030";
+  const green = data?.main?.green?.hex || "303030";
 
   useEffect(() => {
     async function checkProfile() {
@@ -251,20 +260,20 @@ export default function Navbar(props) {
 
   if (props.navbar === "home") {
     return (
-      <NavbarContainer>
+      <NavbarContainer backgroundcolor={backgroundPrimary}>
         <Container>
           <NavLinks>
             <NavImage href="/authenticated/home">
               <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  fill="white"
+                  fill={textColor}
                   d="M16.612 2.214a1.01 1.01 0 0 0-1.242 0L1 13.419l1.243 1.572L4 13.621V26a2.004 2.004 0 0 0 2 2h20a2.004 2.004 0 0 0 2-2V13.63L29.757 15L31 13.428ZM18 26h-4v-8h4Zm2 0v-8a2.002 2.002 0 0 0-2-2h-4a2.002 2.002 0 0 0-2 2v8H6V12.062l10-7.79l10 7.8V26Z"
                 />
               </svg>
             </NavImage>
             <NavImage href="addEvent">
               <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path fill="white" d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" />
+                <path fill={textColor} d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" />
               </svg>
             </NavImage>
             <NavImage
@@ -273,7 +282,7 @@ export default function Navbar(props) {
             >
               <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  fill="white"
+                  fill={textColor}
                   d="M31 30h-2v-3a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3v3h-2v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zm-7-18a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5zm-9 12h-2v-3a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v3H1v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zM8 4a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5z"
                 />
               </svg>
@@ -283,8 +292,7 @@ export default function Navbar(props) {
       </NavbarContainer>
     );
   }
-  if(props.navbar == "groups")
-  {
+  if (props.navbar == "groups") {
     return (
       <NavbarContainer>
         <Container>
@@ -292,14 +300,14 @@ export default function Navbar(props) {
             <NavImage href="/authenticated/home">
               <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  fill="white"
+                  fill={textColor}
                   d="M16.612 2.214a1.01 1.01 0 0 0-1.242 0L1 13.419l1.243 1.572L4 13.621V26a2.004 2.004 0 0 0 2 2h20a2.004 2.004 0 0 0 2-2V13.63L29.757 15L31 13.428ZM18 26h-4v-8h4Zm2 0v-8a2.002 2.002 0 0 0-2-2h-4a2.002 2.002 0 0 0-2 2v8H6V12.062l10-7.79l10 7.8V26Z"
                 />
               </svg>
             </NavImage>
             <NavButton onClick={props.toggleCreateGroup}>
               <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path fill="white" d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" />
+                <path fill={textColor} d="M17 15V8h-2v7H8v2h7v7h2v-7h7v-2z" />
               </svg>
             </NavButton>
             <NavImage
@@ -308,7 +316,7 @@ export default function Navbar(props) {
             >
               <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                 <path
-                  fill="white"
+                  fill={textColor}
                   d="M31 30h-2v-3a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3v3h-2v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zm-7-18a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5zm-9 12h-2v-3a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v3H1v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5zM8 4a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0-2a5 5 0 1 0 5 5a5 5 0 0 0-5-5z"
                 />
               </svg>
@@ -320,20 +328,20 @@ export default function Navbar(props) {
   }
   if (props.navbar == "singleGroup") {
     return (
-      <SinglePageContainer>
+      <SinglePageContainer backgroundcolor={backgroundPrimary}>
         {isConfirmingRemoval && (
-          <ConfirmRemovalContainer>
+          <ConfirmRemovalContainer shadowcolor={shadowColor} backgroundcolor={backgroundPrimary}>
             {props.isOwner ? (
               <>
                 <ConfirmationText>
                   Are you sure you want to DELETE this group?
                 </ConfirmationText>
                 <ButtonGroup>
-                  <RemoveEventButton onClick={props.leaveGroup}>
+                  <RemoveEventButton backgroundcolor={red} onClick={props.leaveGroup}>
                     Delete
                   </RemoveEventButton>
-                  <KeepEventButton onClick={denyRemoveEvent}>
-                    Stay
+                  <KeepEventButton backgroundcolor={backgroundSecondary} onClick={denyRemoveEvent}>
+                    Keep
                   </KeepEventButton>
                 </ButtonGroup>
               </>
@@ -343,10 +351,10 @@ export default function Navbar(props) {
                   Are you sure you want to leave this group?
                 </ConfirmationText>
                 <ButtonGroup>
-                  <RemoveEventButton onClick={props.leaveGroup}>
+                  <RemoveEventButton backgroundcolor={red} onClick={props.leaveGroup}>
                     Leave
                   </RemoveEventButton>
-                  <KeepEventButton onClick={denyRemoveEvent}>
+                  <KeepEventButton backgroundcolor={backgroundSecondary} onClick={denyRemoveEvent}>
                     Stay
                   </KeepEventButton>
                 </ButtonGroup>
@@ -354,25 +362,32 @@ export default function Navbar(props) {
             )}
           </ConfirmRemovalContainer>
         )}
-        <SinglePageInnerContainer>
-          <ReturnButton href="/authenticated/home">
-            <img
-              src="/icons/arrowWhite.svg"
-              width="18px"
-              alt="Return"
-              style={{ transform: "rotate(90deg)" }}
-            />
+        <SinglePageInnerContainer textcolor={textColor}>
+          <ReturnButton href="/authenticated/groups">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 16 10"
+              transform="rotate(90)"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
+                fill={textColor}
+              />
+            </svg>
             <p>Return</p>
           </ReturnButton>
-          <ToggleInvitePageButton onClick={props.showGroupUsers}>
+          <ToggleInvitePageButton backgroundcolor={backgroundSecondary} onClick={props.showGroupUsers}>
             Group members
           </ToggleInvitePageButton>
           {props.isOwner ? (
-            <RemoveEventButton onClick={confirmRemoveEvent}>
+            <RemoveEventButton backgroundcolor={red} onClick={confirmRemoveEvent}>
               Delete
             </RemoveEventButton>
           ) : (
-            <RemoveEventButton onClick={confirmRemoveEvent}>
+            <RemoveEventButton backgroundcolor={red} onClick={confirmRemoveEvent}>
               Leave
             </RemoveEventButton>
           )}
@@ -382,36 +397,43 @@ export default function Navbar(props) {
   }
   if (props.navbar === "singlePage") {
     return (
-      <SinglePageContainer>
+      <SinglePageContainer backgroundcolor={backgroundPrimary}>
         {isConfirmingRemoval && (
-          <ConfirmRemovalContainer>
+          <ConfirmRemovalContainer backgroundcolor={backgroundPrimary} shadowcolor={shadowColor}>
             <ConfirmationText>
               Are you sure you want to delete this event?
             </ConfirmationText>
             <ButtonGroup>
-              <RemoveEventButton onClick={removeEvent}>
+              <RemoveEventButton backgroundcolor={red} onClick={removeEvent}>
                 Delete
               </RemoveEventButton>
-              <KeepEventButton onClick={denyRemoveEvent}>
+              <KeepEventButton backgroundcolor={backgroundSecondary} onClick={denyRemoveEvent}>
                 Keep Event
               </KeepEventButton>
             </ButtonGroup>
           </ConfirmRemovalContainer>
         )}
-        <SinglePageInnerContainer>
+        <SinglePageInnerContainer textcolor={textColor}>
           <ReturnButton href="/authenticated/home">
-            <img
-              src="/icons/arrowWhite.svg"
-              width="18px"
-              alt="Return"
-              style={{ transform: "rotate(90deg)" }}
-            />
+          <svg
+              width="20"
+              height="20"
+              viewBox="0 0 16 10"
+              transform="rotate(90)"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 9.27502L0.5 1.77502L1.55 0.725025L8 7.17502L14.45 0.725025L15.5 1.77502L8 9.27502Z"
+                fill={textColor}
+              />
+            </svg>
             <p>Return</p>
           </ReturnButton>
-          <ToggleInvitePageButton onClick={toggleInvitePage}>
+          <ToggleInvitePageButton backgroundcolor={backgroundSecondary} onClick={toggleInvitePage}>
             Invite
           </ToggleInvitePageButton>
-          <RemoveEventButton onClick={confirmRemoveEvent}>
+          <RemoveEventButton backgroundcolor={red} onClick={confirmRemoveEvent}>
             Delete
           </RemoveEventButton>
         </SinglePageInnerContainer>

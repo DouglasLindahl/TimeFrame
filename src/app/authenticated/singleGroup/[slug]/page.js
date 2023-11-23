@@ -46,6 +46,12 @@ query{
     currentDayText{
       hex
     }
+    red{
+      hex
+    }
+    green{
+      hex
+    }
     offDay{
       hex
     }
@@ -76,7 +82,12 @@ const PageContainer = styled.section`
   display: flex;
   flex-direction: column;
   background-color: ${(props) => props.backgroundcolor};
-  color: white;
+  color: ${(props) => props.textcolor};
+`;
+
+const GroupName = styled.h1`
+  font-size: 36px;
+  font-weight: 500;
 `;
 
 const InfoContainer = styled.section`
@@ -113,17 +124,17 @@ const DateInfo = styled.div`
   max-height: 200px;
   width: 200px;
   border-radius: 8px;
-  background-color: #303030;
+  background-color: ${(props) => props.backgroundcolor};
   overflow-y: auto;
-  color: white;
-  box-shadow: 0 2px 4px #101010;
+  color: ${(props) => props.textcolor};
+  box-shadow: 0 2px 4px ${(props) => props.shadowcolor};
   p {
     font-size: 24px;
   }
 `;
 
 const ExitButton = styled.button`
-  background-color: red;
+  background-color: ${(props) => props.backgroundcolor};
   height: 20px;
   width: 20px;
   position: absolute;
@@ -131,6 +142,26 @@ const ExitButton = styled.button`
   top: 0;
   padding: 4px;
   border-radius: 100%;
+`;
+
+const GroupHeader = styled.section`
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+div{
+  display: flex;
+  gap: 8px;
+}
+form
+{
+  input{
+      background-color: ${(props) => props.backgroundcolor};
+      padding: 4px 8px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px ${(props) => props.shadowcolor};
+  }
+}
 `;
 
 const GroupUsersWindow = styled.div`
@@ -141,21 +172,21 @@ const GroupUsersWindow = styled.div`
   transform: translate(-50%, -50%);
   display: ${({ isopen }) => (isopen ? "flex" : "none")};
   flex-direction: column;
-  color: white;
-  background-color: #202020;
+  color: ${(props) => props.textcolor};
+  background-color: ${(props) => props.backgroundcolor};
   padding: 16px;
   border-radius: 16px;
-  box-shadow: 0 2px 4px #101010;
+  box-shadow: 0 2px 4px ${(props) => props.shadowcolor};
   p {
     margin-left: 8px;
     padding-bottom: 4px;
   }
   form {
     input {
-      background-color: #303030;
+      background-color: ${(props) => props.backgroundsecondary};
       padding: 4px 8px;
       border-radius: 8px;
-      box-shadow: 0 2px 4px #101010;
+      box-shadow: 0 2px 4px ${(props) => props.shadowcolor};
     }
     ::placeholder {
       color: white;
@@ -163,7 +194,7 @@ const GroupUsersWindow = styled.div`
     button {
       padding: 4px 8px;
       border-radius: 16px;
-      background-color: #6c63ff;
+      background-color: ${(props) => props.primarycolor};
       margin-left: 8px;
     }
   }
@@ -196,6 +227,7 @@ export default function singleGrouo(id) {
   const [groupCount, setGroupCount] = useState("");
   const [isOwner, setIsOwner] = useState("");
   const [dateInfoOpen, setDateInfoOpen] = useState("");
+  const [groupData, setGroupData] = useState("");
   const [usernamesWithIds, setUsernamesWithIds] = useState([]);
   const [groupUsers, setGroupUsers] = useState([]);
   const [isGroupUsersWindowOpen, setIsGroupUsersWindowOpen] = useState(false);
@@ -205,10 +237,14 @@ export default function singleGrouo(id) {
   const backgroundPrimary = data?.main?.backgroundPrimary?.hex || "303030";
   const backgroundSecondary = data?.main?.backgroundSecondary?.hex || "303030";
   const textColor = data?.main?.textColor?.hex || "303030";
+  const primaryColor = data?.main?.primaryColor?.hex || "303030";
+  const shadowColor = data?.main?.shadowColor?.hex || "303030";
   const offDayText = data?.main?.offDayText?.hex || "303030";
   const offDay = data?.main?.offDay?.hex || "303030";
   const currentDay = data?.main?.currentDay?.hex || "303030";
   const currentDayText = data?.main?.currentDayText?.hex || "303030";
+  const red = data?.main?.red?.hex || "303030";
+  const green = data?.main?.green?.hex || "303030";
 
   const dynamicStyles = `
   .rbc-today {
@@ -235,7 +271,7 @@ export default function singleGrouo(id) {
   }
   .rbc-day-bg {
     border: none !important;
-    background-color: #303030;
+    background-color: ${backgroundSecondary};
     border-radius: 5px;
     margin: 2px;
   }
@@ -251,14 +287,14 @@ export default function singleGrouo(id) {
       setGroupId(data);
     };
     setId();
-  });
+  },[]);
 
   const closeDateInfo = () => {
     setDateInfoOpen(false);
   };
   const closeGroupUsersWindow = () => {
     setIsGroupUsersWindowOpen(false);
-  }
+  };
 
   useEffect(() => {
     const checkOwner = async () => {
@@ -283,7 +319,7 @@ export default function singleGrouo(id) {
 
   const eventStyle = (event, start, end, isSelected) => {
     const style = {
-      backgroundColor: `#6C63FF`,
+      backgroundColor: primaryColor,
       opacity: 0.8,
       color: "white",
       fontWeight: "bold",
@@ -292,6 +328,19 @@ export default function singleGrouo(id) {
       style,
     };
   };
+
+  useEffect(() => {
+    const getGroupData = async () => {
+      if (groupId) {
+        const { data, error } = await supabase
+          .from("Groups")
+          .select()
+          .eq("id", groupId);
+        setGroupData(data);
+      }
+    };
+    getGroupData();
+  }, [groupId]);
 
   useEffect(() => {
     if (groupId) {
@@ -337,33 +386,32 @@ export default function singleGrouo(id) {
   const showGroupUsers = async () => {
     setIsGroupUsersWindowOpen(!isGroupUsersWindowOpen);
     setDateInfoOpen(false);
-  
+
     try {
       // Fetch users belonging to the group
       const { data: groupUsers, error: groupUsersError } = await supabase
         .from("GroupUsers")
         .select("user_uuid")
         .eq("group_id", groupId);
-  
+
       if (groupUsersError) {
         throw groupUsersError;
       }
-  
+
       const userUUIDs = groupUsers.map((user) => user.user_uuid);
-  
+
       // Fetch user information from UserInfo using user_uuids
       const { data: usersInfo, error: usersInfoError } = await supabase
         .from("UserInfo")
         .select()
         .in("user_uuid", userUUIDs);
-  
+
       if (usersInfoError) {
         throw usersInfoError;
       }
-  
+
       // Display usernames of the fetched users
       const usernames = usersInfo.map((user) => user.username);
-      console.log(usernames); // Check if you're getting the usernames correctly
       setGroupUsers(usernames);
 
       // You can set the fetched usernames to a state or variable for rendering in the UI
@@ -372,7 +420,6 @@ export default function singleGrouo(id) {
       // Handle error state or error display here
     }
   };
-  
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -399,11 +446,14 @@ export default function singleGrouo(id) {
   useEffect(() => {
     const reformatDates = () => {
       if (dates && groupCount) {
+        console.log('Dates:', dates);
+        console.log('Group Count:', groupCount);
+  
         const formattedDates = Object.values(dates).map((groupedDate) => {
           const startDate = parse(groupedDate.date, "yyyy-MM-dd", new Date());
           const endDate = new Date(startDate);
           const eventTitle = `${groupedDate.count} / ${groupCount.length}`;
-
+  
           return {
             id: groupedDate.date,
             title: eventTitle,
@@ -411,13 +461,15 @@ export default function singleGrouo(id) {
             end: endDate,
           };
         });
-
+  
         setFormattedDates(formattedDates);
+      } else {
+        console.log('Dates or Group Count is missing or empty');
       }
     };
-
     reformatDates();
-  }, [dates]);
+  }, [dates, groupCount]);
+  
 
   const handlers = useSwipeable({
     onSwipedLeft: () => handleNextMonth(),
@@ -466,7 +518,6 @@ export default function singleGrouo(id) {
         username: user.username,
         user_uuid: user.user_uuid,
       }));
-      console.log(usernamesAndIds);
       setUsernamesWithIds(usernamesAndIds);
       setDateInfoOpen(true);
       setIsGroupUsersWindowOpen(false);
@@ -561,13 +612,13 @@ export default function singleGrouo(id) {
     }
   };
 
-  if (groupId) {
+  if (groupId && groupData && formattedDates) {
     return (
-      <PageContainer backgroundcolor={backgroundPrimary}>
-        <Header header="home"></Header>
+      <PageContainer textcolor={textColor} backgroundcolor={backgroundPrimary}>
+        <Header header="singlePage"></Header>
         {dateInfoOpen && (
-          <DateInfo>
-            <ExitButton onClick={closeDateInfo}>
+          <DateInfo backgroundcolor={backgroundPrimary} textcolor={textColor} shadowcolor={shadowColor}>
+            <ExitButton backgroundcolor={red} onClick={closeDateInfo}>
               <svg
                 viewBox="0 0 18 18"
                 fill="none"
@@ -585,8 +636,8 @@ export default function singleGrouo(id) {
           </DateInfo>
         )}
         <InfoContainer>
-          <GroupUsersWindow isopen={isGroupUsersWindowOpen}>
-            <ExitButton onClick={closeGroupUsersWindow}>
+          <GroupUsersWindow primarycolor={primaryColor} backgroundsecondary={backgroundSecondary} backgroundcolor={backgroundPrimary} shadowcolor={shadowColor} isopen={isGroupUsersWindowOpen}>
+            <ExitButton backgroundcolor={red} onClick={closeGroupUsersWindow}>
               <svg
                 viewBox="0 0 18 18"
                 fill="none"
@@ -601,7 +652,7 @@ export default function singleGrouo(id) {
             {groupUsers.map((user, index) => (
               <p key={index}>{user}</p>
             ))}
-            <form>
+            <form backgroundcolor={backgroundSecondary}>
               <input
                 type="text"
                 id="inviteUser"
@@ -609,13 +660,18 @@ export default function singleGrouo(id) {
                 placeholder="Username"
                 onChange={(e) => setInvitedUser(e.target.value)}
               />
-              <button onClick={handleInvite}>Invite</button>
+              <button backgroundcolor={primaryColor} onClick={handleInvite}>Invite</button>
             </form>
           </GroupUsersWindow>
-          <form>
-            <input type="date" onChange={(e) => setDate(e.target.value)} />
-          </form>
-          <button onClick={addDate}>Submit</button>
+          <GroupHeader shadowcolor={shadowColor} backgroundcolor={backgroundSecondary}>
+            <GroupName>{groupData[0].group_name}</GroupName>
+            <div>
+              <form>
+                <input type="date" onChange={(e) => setDate(e.target.value)} />
+              </form>
+              <button onClick={addDate}>Submit</button>
+            </div>
+          </GroupHeader>
           <ButtonContainer>
             <Button onClick={handlePreviousMonth}>
               <svg

@@ -28,11 +28,10 @@ export default function Settings() {
   }
   return (
     <SettingsPage>
-      <Header header={"home"}></Header>
+      <Header header={"singlePage"}></Header>
       <Content>
         <button onClick={handleClick}>Logout</button>
         <RegisterProfile></RegisterProfile>
-        <Invites></Invites>
       </Content>
       <Navbar navbar={"home"}></Navbar>
     </SettingsPage>
